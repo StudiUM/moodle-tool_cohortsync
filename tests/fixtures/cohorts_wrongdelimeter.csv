@@ -1,0 +1,5 @@
+name,idnumber,description,category_name,visible,username
+cohort name 1,cohortid1,first description,cat child,,admda_taboubii
+cohort name 2,cohortid2,first description,CAT2,,user1
+cohort name 1,cohortid1,first description,CAT2,,user2
+cohort name 1,cohortid1,first description,CAT2,,user3
