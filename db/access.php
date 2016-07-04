@@ -17,7 +17,7 @@
 /**
  * Cohort synchronisation plugin.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

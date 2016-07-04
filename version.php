@@ -17,7 +17,7 @@
 /**
  * Version details.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,4 +27,4 @@ defined('MOODLE_INTERNAL') || die;
 
 $plugin->version  = 2016060600;
 $plugin->requires = 2016052300;
-$plugin->component = 'local_cohortsync';
+$plugin->component = 'tool_cohortsync';

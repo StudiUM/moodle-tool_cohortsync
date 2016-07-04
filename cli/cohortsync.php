@@ -17,19 +17,19 @@
 /**
  * Command-line script for cohort synchronisation.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_cohortsync;
+namespace tool_cohortsync;
 
 define('CLI_SCRIPT', true);
 
-require(__DIR__ . '/../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
-require_once($CFG->dirroot . '/local/cohortsync/classes/cohortsync.php');
+require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
 
 // Now get cli options.
 list($options, $unrecognized) = cli_get_params(
@@ -75,7 +75,7 @@ if ($options['help']) {
                           Default: system
 
     Example:
-    \$ sudo -u www-data /usr/bin/php local/cohortsync/cli/cohortsync.php -u=user_idnumber -f=/app/data/cohort/csv/file.csv
+    \$ sudo -u www-data /usr/bin/php admin/tool/cohortsync/cli/cohortsync.php -u=user_idnumber -f=/app/data/cohort/csv/file.csv
     ";
 
     echo $help;

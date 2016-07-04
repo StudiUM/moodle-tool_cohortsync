@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'local_cohortsync', language 'en'.
+ * Strings for component 'tool_cohortsync', language 'en'.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,7 +25,7 @@
 
 $string['cohortscreated'] = '"{$a}" cohort(s) created';
 $string['cohortsyncheader'] = 'Cohort synchronisation configuration';
-$string['createcohort'] = 'Create cohort if not exist';
+$string['createcohort'] = 'Create cohort if it does not exists';
 $string['createcohortdesc'] = 'When this parameter is set to true, we create cohort if it does not exist.';
 $string['csvdelimiter'] = 'CSV delimiter';
 $string['encoding'] = 'Encoding';

@@ -15,40 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for local_cohortsync.
+ * Tests for tool_cohortsync.
  *
- * @package   local_cohortsync
+ * @package   tool_cohortsync
  * @copyright 2016 Universite de Montreal
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use local_cohortsync\cohortsync;
+use tool_cohortsync\cohortsync;
 
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/local/cohortsync/classes/cohortsync.php');
+require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
 
 /**
- * Tests for local_cohortsync.
+ * Tests for tool_cohortsync.
  *
- * @package   local_cohortsync
+ * @package   tool_cohortsync
  * @copyright 2016 Universite de Montreal
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_cohortsync_testcase extends advanced_testcase {
+class tool_cohortsync_testcase extends advanced_testcase {
 
     /**
      * Loads the database with test data.
      */
     public static function setUpBeforeClass() {
 
-        set_config('useridentifier', 'username', 'local_cohortsync');
-        set_config('csvdelimiter', 'comma', 'local_cohortsync');
-        set_config('encoding', 'UTF-8', 'local_cohortsync');
-        set_config('createcohort', 1, 'local_cohortsync');
+        set_config('useridentifier', 'username', 'tool_cohortsync');
+        set_config('csvdelimiter', 'comma', 'tool_cohortsync');
+        set_config('encoding', 'UTF-8', 'tool_cohortsync');
+        set_config('createcohort', 1, 'tool_cohortsync');
     }
 
     /**
@@ -66,8 +66,8 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync() {
         global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_username.csv';
-        set_config('filepathsource', $csvfilename, 'local_cohortsync');
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_username.csv';
+        set_config('filepathsource', $csvfilename, 'tool_cohortsync');
 
         $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
         $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
@@ -117,9 +117,9 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_withuseridnumber() {
         global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_withuseridnumber.csv';
-        set_config('filepathsource', $csvfilename, 'local_cohortsync');
-        set_config('useridentifier', 'user_idnumber', 'local_cohortsync');
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_withuseridnumber.csv';
+        set_config('filepathsource', $csvfilename, 'tool_cohortsync');
+        set_config('useridentifier', 'user_idnumber', 'tool_cohortsync');
 
         $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
         $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
@@ -172,7 +172,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_with_defaultcontext() {
         global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_nocontext.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_nocontext.csv';
 
         $defaultcat = $this->getDataGenerator()->create_category(array('name' => 'DEFAULTCAT'));
         $contextdefault = context_coursecat::instance($defaultcat->id);
@@ -203,7 +203,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_with_nodefaultcontext() {
         global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_nocontext.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_nocontext.csv';
 
         $user1 = $this->getDataGenerator()->create_user(array(
             'firstname' => 'User1',
@@ -231,7 +231,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_with_emptyfile() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_empty.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_empty.csv';
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();
@@ -246,7 +246,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_with_notfoundfile() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_notfound.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfound.csv';
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();
@@ -261,7 +261,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_with_no_columnnames() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_nocolumnnames.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_nocolumnnames.csv';
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();
@@ -276,7 +276,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_with_emptyidnumber() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_emptyidnumber.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_emptyidnumber.csv';
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();
@@ -292,7 +292,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_withcategorypath() {
         global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_withcategorypath.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_withcategorypath.csv';
 
         $user1 = $this->getDataGenerator()->create_user(array(
             'firstname' => 'User1',
@@ -319,7 +319,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_warnings_when_notfoundcategory() {
         global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_notfoundcategory.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfoundcategory.csv';
 
         $user1 = $this->getDataGenerator()->create_user(array(
             'firstname' => 'User1',
@@ -349,7 +349,7 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_warnings_when_notfounduser() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_notfounduser.csv';
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfounduser.csv';
         $defaultcat = $this->getDataGenerator()->create_category(array('name' => 'DEFAULTCAT'));
 
         $cohortsync = new cohortsync($csvfilename);
@@ -367,8 +367,8 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_withwrongdelimiter() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_wrongdelimeter.csv';
-        set_config('csvdelimiter', 'wrongdelimiter', 'local_cohortsync');
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_wrongdelimeter.csv';
+        set_config('csvdelimiter', 'wrongdelimiter', 'tool_cohortsync');
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();
@@ -385,8 +385,8 @@ class local_cohortsync_testcase extends advanced_testcase {
      */
     public function test_cohortsync_withwronguseridentifier() {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/local/cohortsync/tests/fixtures/cohorts_username.csv';
-        set_config('useridentifier', 'wronguseridentifier', 'local_cohortsync');
+        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_username.csv';
+        set_config('useridentifier', 'wronguseridentifier', 'tool_cohortsync');
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();

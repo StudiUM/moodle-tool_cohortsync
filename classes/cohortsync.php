@@ -17,13 +17,13 @@
 /**
  * Synchronise cohorts.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_cohortsync;
+namespace tool_cohortsync;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -36,7 +36,7 @@ require_once($CFG->dirroot.'/cohort/lib.php');
 /**
  * Class to synchronise cohort and cohort members from a source file.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -77,16 +77,16 @@ class cohortsync {
     public function __construct($filepath = null, $params = array()) {
 
         if (empty($filepath)) {
-            $filepath = get_config('local_cohortsync', 'filepathsource');
+            $filepath = get_config('tool_cohortsync', 'filepathsource');
         }
         if (!empty($filepath)) {
             if (is_readable($filepath) && is_file($filepath)) {
                 $this->filename = $filepath;
             } else {
-                $this->errors[] = new \lang_string('errorreadingfile', 'local_cohortsync', $filepath);
+                $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
             }
         } else {
-            $this->errors[] = new \lang_string('errorreadingfile', 'local_cohortsync', $filepath);
+            $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
         }
 
         $this->params = $this->get_defaults_params();
@@ -102,11 +102,11 @@ class cohortsync {
         $this->params = array_merge($this->params, $params);
         // Validate the delimiter.
         if (!in_array($this->params['csvdelimiter'], array_keys(\csv_import_reader::get_delimiter_list()))) {
-            $this->errors[] = new \lang_string('errordelimiterfile', 'local_cohortsync');
+            $this->errors[] = new \lang_string('errordelimiterfile', 'tool_cohortsync');
         }
         // Validate useridentifier.
         if (!in_array($this->params['useridentifier'], array('user_id', 'username', 'user_idnumber'))) {
-            $this->errors[] = new \lang_string('erroruseridentifier', 'local_cohortsync');
+            $this->errors[] = new \lang_string('erroruseridentifier', 'tool_cohortsync');
         }
     }
 
@@ -155,7 +155,7 @@ class cohortsync {
                             $this->infos['users'][$cohort['idnumber']]++;
                         }
                     } else {
-                        $this->warnings[] = new \lang_string('notfounduser', 'local_cohortsync', $useridentifiervalue);
+                        $this->warnings[] = new \lang_string('notfounduser', 'tool_cohortsync', $useridentifiervalue);
                     }
                 }
             }
@@ -170,10 +170,10 @@ class cohortsync {
      */
     protected function get_defaults_params() {
         return array(
-            'useridentifier' => get_config('local_cohortsync', 'useridentifier'),
-            'createcohort' => get_config('local_cohortsync', 'createcohort'),
-            'csvdelimiter' => get_config('local_cohortsync', 'csvdelimiter'),
-            'encoding' => get_config('local_cohortsync', 'encoding')
+            'useridentifier' => get_config('tool_cohortsync', 'useridentifier'),
+            'createcohort' => get_config('tool_cohortsync', 'createcohort'),
+            'csvdelimiter' => get_config('tool_cohortsync', 'csvdelimiter'),
+            'encoding' => get_config('tool_cohortsync', 'encoding')
         );
     }
 
@@ -351,7 +351,7 @@ class cohortsync {
             return;
         }
         if (!in_array('idnumber', $columnsmapping)) {
-            $this->errors[] = new \lang_string('idnumbercolumnmissing', 'local_cohortsync');
+            $this->errors[] = new \lang_string('idnumbercolumnmissing', 'tool_cohortsync');
             return;
         }
         if ($extracolumns) {
@@ -382,7 +382,7 @@ class cohortsync {
                 $this->errors['line_' . ($rownum + 1)] = new \lang_string('namefieldempty', 'cohort');
             }
             if (empty($hash['idnumber'])) {
-                $this->errors['line_' . ($rownum + 1)] = new \lang_string('idnumbercolumnmissing', 'local_cohortsync');
+                $this->errors['line_' . ($rownum + 1)] = new \lang_string('idnumbercolumnmissing', 'tool_cohortsync');
             }
 
             $cohorts[$rownum] = array_intersect_key($hash, $displaycolumns);
@@ -465,7 +465,7 @@ class cohortsync {
             mtrace($infomessage . "\n");
 
             $nbcohortcreated = (!empty($this->infos['cohorts'])) ? $this->infos['cohorts'] : '00';
-            $messageinfocohort = new \lang_string('cohortscreated', 'local_cohortsync', $nbcohortcreated);
+            $messageinfocohort = new \lang_string('cohortscreated', 'tool_cohortsync', $nbcohortcreated);
             mtrace($messageinfocohort . "\n");
 
             if (isset($this->infos['users'])) {
@@ -473,7 +473,7 @@ class cohortsync {
                     $varinfo = array();
                     $varinfo['name'] = $key;
                     $varinfo['count'] = $count;
-                    $messageuseradded = new \lang_string('useradded', 'local_cohortsync', (object) $varinfo);
+                    $messageuseradded = new \lang_string('useradded', 'tool_cohortsync', (object) $varinfo);
                     mtrace($messageuseradded . "\n");
                 }
             }

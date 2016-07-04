@@ -17,7 +17,7 @@
 /**
  * Settings for the cohort synchronisation plugin.
  *
- * @package    local_cohortsync
+ * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,11 +29,11 @@ global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
 
 if ($hassiteconfig) { // Needs this condition or there is error on login page.
-    $settings = new admin_settingpage('local_cohortsync', get_string('pluginname', 'local_cohortsync'));
-    $ADMIN->add('localplugins', $settings);
+    $settings = new admin_settingpage('tool_cohortsync', get_string('pluginname', 'tool_cohortsync'));
+    $ADMIN->add('tools', $settings);
 
     $settings->add(new admin_setting_heading('cohortsyncheader',
-            get_string('cohortsyncheader', 'local_cohortsync'), ''));
+            get_string('cohortsyncheader', 'tool_cohortsync'), ''));
 
 
     $useridentifieroptions = array(
@@ -42,29 +42,29 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         'user_idnumber' => 'user_idnumber'
     );
 
-    $settings->add(new admin_setting_configselect('local_cohortsync/useridentifier',
-        get_string('useridentifier', 'local_cohortsync'),
-        get_string('useridentifierdesc', 'local_cohortsync'),
+    $settings->add(new admin_setting_configselect('tool_cohortsync/useridentifier',
+        get_string('useridentifier', 'tool_cohortsync'),
+        get_string('useridentifierdesc', 'tool_cohortsync'),
         'username',
         $useridentifieroptions));
 
-    $settings->add(new admin_setting_configcheckbox('local_cohortsync/createcohort',
-            new lang_string('createcohort', 'local_cohortsync'),
-            new lang_string('createcohortdesc', 'local_cohortsync'), 1));
+    $settings->add(new admin_setting_configcheckbox('tool_cohortsync/createcohort',
+            new lang_string('createcohort', 'tool_cohortsync'),
+            new lang_string('createcohortdesc', 'tool_cohortsync'), 1));
 
 
     $choices = csv_import_reader::get_delimiter_list();
-    $settings->add(new admin_setting_configselect('local_cohortsync/csvdelimiter',
-        get_string('csvdelimiter', 'local_cohortsync'), '', 'comma', $choices));
+    $settings->add(new admin_setting_configselect('tool_cohortsync/csvdelimiter',
+        get_string('csvdelimiter', 'tool_cohortsync'), '', 'comma', $choices));
 
     $choices = core_text::get_encodings();
-    $settings->add(new admin_setting_configselect('local_cohortsync/encoding',
-        get_string('encoding', 'local_cohortsync'), '', 'UTF-8', $choices));
+    $settings->add(new admin_setting_configselect('tool_cohortsync/encoding',
+        get_string('encoding', 'tool_cohortsync'), '', 'UTF-8', $choices));
 
-    $settings->add(new admin_setting_configdirectory('local_cohortsync/filepathsource',
-            new lang_string('filepathsource', 'local_cohortsync'),
+    $settings->add(new admin_setting_configdirectory('tool_cohortsync/filepathsource',
+            new lang_string('filepathsource', 'tool_cohortsync'),
             '', '', PARAM_TEXT));
 
-    $settings->add(new admin_setting_heading('formatcsv', get_string('formatcsv', 'local_cohortsync'),
-        get_string('formatcsvdesc', 'local_cohortsync')));
+    $settings->add(new admin_setting_heading('formatcsv', get_string('formatcsv', 'tool_cohortsync'),
+        get_string('formatcsvdesc', 'tool_cohortsync')));
 }
