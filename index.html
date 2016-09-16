@@ -70,17 +70,16 @@ You can also replace the "category_name" by "category_path", "category_id" or "c
 
 <p><img src="http://shorturl.ca/images/cohortsync.PNG" alt="cohortsync-Help"></p>
 
-<p>We can use the plugin in several ways</p>
+<p>We can use the plugin in several ways
+Configure the plugin with "The path to the file source" specified, in this case, we can just run the command:</p>
 
-<ul>
-<li>
-<p>Configure the plugin with "The path to the file source" specified, in this case, we can just run the command:</p>
+<pre><code>php admin/tool/cohortsync/cli/cohortsync.php
+</code></pre>
 
-<p>php admin/tool/cohortsync/cli/cohortsync.php</p>
-</li>
-<li><p>run the command with params:
-php admin/tool/cohortsync/cli/cohortsync.php --filepath=/pathfile/ --csvdelimeter=comma --createcohort=true --useridentifier=username --context=system</p></li>
-</ul>
+<p>run the command with params:</p>
+
+<pre><code>php admin/tool/cohortsync/cli/cohortsync.php --filepath=/pathfile/ --csvdelimeter=comma --createcohort=true --useridentifier=username --context=system
+</code></pre>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/StudiUM/moodle-tool_cohortsync">Moodle-tool cohortsync</a> is maintained by <a href="https://github.com/StudiUM">StudiUM</a>.</span>
