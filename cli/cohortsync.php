@@ -52,9 +52,9 @@ list($options, $unrecognized) = cli_get_params(
 );
 
 if ($options['help']) {
-    $help = "Perform Cohort Synchronisation.
+    $help = "Perform Cohort Synchronization.
 
-    This script synchronise chohrts from csv file with cohorts in Moddle database
+    This script synchronize cohorts from csv file with cohorts in Moodle database
     The members existing in csv file but not in Moodle cohorts will be ignored.
 
     Options:

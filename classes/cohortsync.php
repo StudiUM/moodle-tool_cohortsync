@@ -121,8 +121,8 @@ class cohortsync {
         if (empty($this->errors) && !empty($this->cohorts)) {
             $cohortsexist = array();
             foreach ($this->cohorts as $cohort) {
-                $useridentifiervalue = (isset($cohort[$this->params['useridentifier']])) ?
-                        $cohort[$this->params['useridentifier']] : false;
+                $paramuserid = $this->params['useridentifier'];
+                $useridentifiervalue = (isset($cohort[$paramuserid])) ? $cohort[$paramuserid] : false;
                 $cohortid = isset($cohortsexist[$cohort['idnumber']]) ? $cohortsexist[$cohort['idnumber']] : false;
                 if ($cohortid === false) {
                     $c = $DB->get_record('cohort', array('idnumber' => $cohort['idnumber']));
@@ -165,7 +165,7 @@ class cohortsync {
 
     /**
      * Get default params for chohort sync plugin.
-     * 
+     *
      * @return array params list
      */
     protected function get_defaults_params() {
@@ -239,9 +239,9 @@ class cohortsync {
 
         if (!empty($hash['context'])) {
             $systemcontext = \context_system::instance();
-            if ((\core_text::strtolower(trim($hash['context'])) ===
-                    \core_text::strtolower($systemcontext->get_context_name())) ||
-                    ('' . $hash['context'] === '' . $systemcontext->id)) {
+            $lowerconxt = \core_text::strtolower(trim($hash['context']));
+            $strlowerconxtname = \core_text::strtolower($systemcontext->get_context_name());
+            if (($lowerconxt === $strlowerconxtname) || ('' . $hash['context'] === '' . $systemcontext->id)) {
                 // User meant system context.
                 $hash['contextid'] = $systemcontext->id;
                 $contextlist = $this->get_context_options();
@@ -432,7 +432,7 @@ class cohortsync {
     }
 
     /**
-     * Display informations about processing cohorts data. 
+     * Display informations about processing cohorts data.
      *
      * @param string $type type of information to output.
      */

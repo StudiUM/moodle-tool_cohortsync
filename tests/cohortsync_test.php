@@ -301,7 +301,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
             'email' => 'nomail+user1@test.com'));
 
         $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('parent' => $cat1->id,'name' => 'CAT2'));
+        $cat2 = $this->getDataGenerator()->create_category(array('parent' => $cat1->id, 'name' => 'CAT2'));
 
         $cohortsync = new cohortsync($csvfilename);
         $cohortsync->update_cohorts();
