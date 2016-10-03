@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
+require_once($CFG->libdir. '/coursecatlib.php');
 
 if ($hassiteconfig) { // Needs this condition or there is error on login page.
     $settings = new admin_settingpage('tool_cohortsync', get_string('pluginname', 'tool_cohortsync'));
@@ -35,11 +36,42 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
     $settings->add(new admin_setting_heading('cohortsyncheader',
             get_string('cohortsyncheader', 'tool_cohortsync'), ''));
 
+    $choices = csv_import_reader::get_delimiter_list();
+    $settings->add(new admin_setting_configselect('tool_cohortsync/csvdelimiter',
+        get_string('csvdelimiter', 'tool_cohortsync'), '', 'comma', $choices));
+
+    $choices = core_text::get_encodings();
+    $settings->add(new admin_setting_configselect('tool_cohortsync/csvencoding',
+        get_string('encoding', 'tool_cohortsync'), '', 'UTF-8', $choices));
+
+    // GEt context for cohorts.
+    $contextoptions = array();
+    $displaylist = coursecat::make_categories_list('moodle/cohort:manage');
+    // We need to index the options array by context id instead of category id and add option for system context.
+    $syscontext = context_system::instance();
+    if (has_capability('moodle/cohort:manage', $syscontext)) {
+        $contextoptions[$syscontext->id] = $syscontext->get_context_name();
+    }
+    foreach ($displaylist as $cid => $name) {
+        $context = context_coursecat::instance($cid);
+        $contextoptions[$context->id] = $name;
+    }
+    
+    $settings->add(new admin_setting_configselect('tool_cohortsync/defaultcontext',
+            new lang_string('defaultcontext', 'cohort'),
+            '',
+            1,
+            $contextoptions));
+    
+
+    $settings->add(new admin_setting_heading('cohortmembersyncheader',
+            get_string('cohortmembersyncheader', 'tool_cohortsync'), ''));
+
 
     $useridentifieroptions = array(
-        'user_id' => 'user_id',
+        'id' => 'id',
         'username' => 'username',
-        'user_idnumber' => 'user_idnumber'
+        'idnumber' => 'idnumber'
     );
 
     $settings->add(new admin_setting_configselect('tool_cohortsync/useridentifier',
@@ -48,23 +80,23 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         'username',
         $useridentifieroptions));
 
-    $settings->add(new admin_setting_configcheckbox('tool_cohortsync/createcohort',
-            new lang_string('createcohort', 'tool_cohortsync'),
-            new lang_string('createcohortdesc', 'tool_cohortsync'), 1));
+    $cohortidentifieroptions = array(
+        'id' => 'id',
+        'name' => 'name',
+        'idnumber' => 'idnumber'
+    );
+    $settings->add(new admin_setting_configselect('tool_cohortsync/cohortidentifier',
+            new lang_string('cohortidentifier', 'tool_cohortsync'),
+            new lang_string('cohortidentifierdesc', 'tool_cohortsync'),
+            'idnumber',
+            $cohortidentifieroptions));
 
 
     $choices = csv_import_reader::get_delimiter_list();
-    $settings->add(new admin_setting_configselect('tool_cohortsync/csvdelimiter',
-        get_string('csvdelimiter', 'tool_cohortsync'), '', 'comma', $choices));
+    $settings->add(new admin_setting_configselect('tool_cohortsync/flatfiledelimiter',
+        get_string('flatfiledelimiter', 'tool_cohortsync'), '', 'comma', $choices));
 
     $choices = core_text::get_encodings();
-    $settings->add(new admin_setting_configselect('tool_cohortsync/encoding',
+    $settings->add(new admin_setting_configselect('tool_cohortsync/flatfileencoding',
         get_string('encoding', 'tool_cohortsync'), '', 'UTF-8', $choices));
-
-    $settings->add(new admin_setting_configdirectory('tool_cohortsync/filepathsource',
-            new lang_string('filepathsource', 'tool_cohortsync'),
-            '', '', PARAM_TEXT));
-
-    $settings->add(new admin_setting_heading('formatcsv', get_string('formatcsv', 'tool_cohortsync'),
-        get_string('formatcsvdesc', 'tool_cohortsync')));
 }

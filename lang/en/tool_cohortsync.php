@@ -23,11 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['cohortidentifier'] = 'Cohort identifier';
+$string['cohortidentifierdesc'] = 'This parameter is used to identify the cohort in which to insert the member.';
 $string['cohortscreated'] = '"{$a}" cohort(s) created';
-$string['cohortsyncheader'] = 'Cohort synchronisation configuration';
-$string['createcohort'] = 'Create cohort if it does not exists';
-$string['createcohortdesc'] = 'When this parameter is set to true, we create cohort if it does not exist.';
+$string['cohortsyncheader'] = 'Cohort configuration';
+$string['cohortmembersyncheader'] = 'Cohort member configuration';
 $string['csvdelimiter'] = 'CSV delimiter';
+$string['flatfiledelimiter'] = 'Flat file delimiter';
 $string['encoding'] = 'Encoding';
 $string['errordelimiterfile'] = 'Only these delimeters are allowed: comma, semicolon, colon, tab';
 $string['errorreadingfile'] = 'The CSV file "{$a}" is not readable or does not exist.';
@@ -50,8 +52,9 @@ $string['formatcsvdesc'] = 'The following formats are allowed<br>
         We can use the "category_name" to get the context, if the category is not found the system context will be used<br>
         You can also replace the "category_name" by "category_path", "category_id" or "category_idnumber"';
 $string['idnumbercolumnmissing'] = 'The "idnumber" column is missing';
-$string['pluginname'] = 'Cohort synchronisation';
+$string['pluginname'] = 'Cohort synchronization';
 $string['notfounduser'] = 'User "{$a}" not found in database';
 $string['useradded'] = '"{$a->count}" user(s) have been added to the cohort "{$a->name}"';
+$string['userdeleted'] = '"{$a->count}" user(s) have been removed from the cohort "{$a->name}"';
 $string['useridentifier'] = 'User identifier';
 $string['useridentifierdesc'] = 'This parameter is used to identify the user who will be added to the cohort.';
