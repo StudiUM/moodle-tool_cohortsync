@@ -92,11 +92,6 @@ foreach ($params as $param) {
 // Emulate normal session.
 cron_setup_user();
 
-// Cast boolean params.
-if (isset($options['createcohort'])) {
-    $options['createcohort'] = ($options['createcohort'] === 'false' || $options['createcohort'] === '0') ? false : true;
-}
-
 if (empty($options['verbose'])) {
     $trace = new \null_progress_trace();
 } else {
@@ -108,7 +103,10 @@ $filename = (isset($options['filepath']) && !empty($options['filepath'])) ? $opt
 $starttime = microtime();
 
 $cohortsync = new cohortsync($trace, $filename,  $options);
-$cohortsync->update_cohorts();
+
+if (!$cohortsync->get_errors()) {
+    $cohortsync->update_cohorts();
+}
 $cohortsync->output_result();
 
 // Start output log.

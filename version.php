@@ -25,6 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2016060600;
+$plugin->version  = 2016100700;
 $plugin->requires = 2016052300;
 $plugin->component = 'tool_cohortsync';

@@ -33,6 +33,7 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
     $settings = new admin_settingpage('tool_cohortsync', get_string('pluginname', 'tool_cohortsync'));
     $ADMIN->add('tools', $settings);
 
+    // Cohort configuration.
     $settings->add(new admin_setting_heading('cohortsyncheader',
             get_string('cohortsyncheader', 'tool_cohortsync'), ''));
 
@@ -56,17 +57,16 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         $context = context_coursecat::instance($cid);
         $contextoptions[$context->id] = $name;
     }
-    
+
     $settings->add(new admin_setting_configselect('tool_cohortsync/defaultcontext',
             new lang_string('defaultcontext', 'cohort'),
             '',
             1,
             $contextoptions));
-    
 
+    // Cohort member configuration.
     $settings->add(new admin_setting_heading('cohortmembersyncheader',
             get_string('cohortmembersyncheader', 'tool_cohortsync'), ''));
-
 
     $useridentifieroptions = array(
         'id' => 'id',
@@ -85,12 +85,12 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         'name' => 'name',
         'idnumber' => 'idnumber'
     );
+
     $settings->add(new admin_setting_configselect('tool_cohortsync/cohortidentifier',
             new lang_string('cohortidentifier', 'tool_cohortsync'),
             new lang_string('cohortidentifierdesc', 'tool_cohortsync'),
             'idnumber',
             $cohortidentifieroptions));
-
 
     $choices = csv_import_reader::get_delimiter_list();
     $settings->add(new admin_setting_configselect('tool_cohortsync/flatfiledelimiter',

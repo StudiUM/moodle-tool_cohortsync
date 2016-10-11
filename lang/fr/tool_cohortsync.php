@@ -25,15 +25,18 @@
 
 $string['cohortscreated'] = '"{$a}" cohorte(s) ont été crée';
 $string['cohortsyncheader'] = 'Paramètrage de la synchronisation des cohortes';
-$string['createcohort'] = 'Créer la cohorte si elle n\'existe pas';
-$string['createcohortdesc'] = 'Quand ce paramètre est à "oui", on crée la cohorte si elle n\'existe pas.';
+$string['cohortidentifier'] = 'Identifiant de la cohorte';
+$string['cohortidentifierdesc'] = 'Ce paramètre est utilisé pour identifier la cohorte.';
+$string['cohortmembersyncheader'] = 'Paramètrage de la synchronisation des membres de cohortes';
 $string['csvdelimiter'] = 'Délimiteur CSV';
 $string['encoding'] = 'Encodage';
+$string['errordefaultcontext'] = "Le context de défaut n'existe pas'";
 $string['errordelimiterfile'] = 'Seuls ces délimiteurs sont autorisés: comma, semicolon, colon, tab';
 $string['errorreadingfile'] = 'Le fichier CSV "{$a}" n\'est pas lisible ou n\'existe pas';
 $string['errorreadingdefaultfile'] = 'Le fichier CSV par défaut "{$a}" n\'est pas lisible ou n\'existe pas';
 $string['erroruseridentifier'] = 'Seuls ces identifiants utilisateur sont autorisés: user_id, username, user_idnumber';
 $string['filepathsource'] = 'Le chemin vers le fichier source';
+$string['flatfiledelimiter'] = 'Délimiteur du fichier';
 $string['formatcsv'] = 'Format du fichier CSV';
 $string['formatcsvdesc'] = 'Les formats suivants sont autorisés<br>
         <pre>name,idnumber,description,descriptionformat,contextid,visible,username</pre><br>
@@ -52,6 +55,7 @@ $string['formatcsvdesc'] = 'Les formats suivants sont autorisés<br>
 $string['idnumbercolumnmissing'] = 'La colonne "idnumber" est manquant';
 $string['pluginname'] = 'Synchronisation des cohortes';
 $string['notfounduser'] = 'L\'utilisateur "{$a}" non trouvé dans la base de donnée';
-$string['useradded'] = '"{$a->count}" utilisateur(s) ont été ajouté à la cohorte "{$a->name}"';
+$string['useradded'] = '"{$a->count}" utilisateur(s) ont été supprimé(s) de la cohorte "{$a->name}"';
+$string['userdeleted'] = '"{$a->count}" utilisateur(s) ont été ajouté(s) à la cohorte "{$a->name}"';
 $string['useridentifier'] = 'Identifiant de l\'utilisateur';
 $string['useridentifierdesc'] = 'Ce paramètre est utilisé pour identifier l\'utilisateur qui va être associé à la cohorte.';

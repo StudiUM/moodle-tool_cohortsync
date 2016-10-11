@@ -61,7 +61,6 @@ class cohortmembersync {
     /** @var progress_trace trace */
     protected $trace = null;
 
-
     /**
      * Class constructor.
      *
@@ -73,7 +72,7 @@ class cohortmembersync {
 
         $this->trace = $trace;
         if (!empty($filepath)) {
-            if (is_readable($filepath) && is_file($filepath)) {
+            if (is_readable($filepath) && is_file($filepath) && filesize($filepath) != 0) {
                 $this->filename = $filepath;
             } else {
                 $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
@@ -92,11 +91,11 @@ class cohortmembersync {
             $this->errors[] = "Unknown delimiter : " . $this->params['flatfiledelimiter'];
         }
         // Validate useridentifier.
-        if (!in_array($this->params['useridentifier'], array('id', 'username'))) {
+        if (!in_array($this->params['useridentifier'], array('id',  'idnumber', 'username'))) {
             $this->errors[] = "Unknown user identifier : " . $this->params['useridentifier'];
         }
-        
-        // Validate useridentifier.
+
+        // Validate cohortidentifier.
         if (!in_array($this->params['cohortidentifier'], array('name', 'idnumber', 'id'))) {
             $this->errors[] = "Unknown cohort identifier : " . $this->params['cohortidentifier'];
         }
@@ -110,13 +109,13 @@ class cohortmembersync {
 
         // Prepare cohorts members data from CSV file.
         $data = $this->process_file();
-        
+
         if (empty($this->errors) && !empty($data)) {
             foreach ($data as $cohortmember) {
                 $cohortid = $cohortmember[1];
                 if ($cohortmember[0] == "add") {
                     cohort_add_member($cohortid, $cohortmember[2]);
-                    
+
                     if (!isset($this->infos['usersadded'][$cohortid])) {
                         $this->infos['usersadded'][$cohortid] = 1;
                     } else {
@@ -134,10 +133,9 @@ class cohortmembersync {
         }
     }
 
-
     /**
      * Get default params for chohort sync plugin.
-     * 
+     *
      * @return array params list
      */
     protected function get_defaults_params() {
@@ -173,15 +171,17 @@ class cohortmembersync {
      */
     protected function process_file() {
         global $DB;
-        
+
         if (!empty($this->errors)) {
             return;
         }
 
+        $cachedusers = array();
+        $cachedcohorts = array();
+
         // We may need more memory here.
         \core_php_time_limit::raise();
         \raise_memory_limit(MEMORY_HUGE);
-
 
         $this->trace->output("Processing flat file cohort members");
         $data = array();
@@ -189,7 +189,6 @@ class cohortmembersync {
         $content = file_get_contents($this->filename);
         $delimiters = \csv_import_reader::get_delimiter_list();
         $separator = $delimiters[$this->params['flatfiledelimiter']];
-        
 
         if ($content !== false) {
             $content = \core_text::convert($content, $this->params['flatfileencoding'], 'utf-8');
@@ -197,7 +196,7 @@ class cohortmembersync {
             $content = explode("\n", $content);
 
             $line = 0;
-            foreach($content as $fields) {
+            foreach ($content as $fields) {
                 $line++;
                 if (trim($fields) === '') {
                     // Empty lines are ignored.
@@ -206,7 +205,6 @@ class cohortmembersync {
 
                 // Deal with different separators.
                 $fields = explode($separator, $fields);
-
 
                 // If a line is incorrectly formatted ie does not have 2 comma separated fields then ignore it.
                 if (count($fields) !== 3 ) {
@@ -220,11 +218,11 @@ class cohortmembersync {
 
                 // Deal with quoted values - all or nothing, we need to support "' in idnumbers, sorry.
                 if (strpos($fields[0], "'") === 0) {
-                    foreach ($fields as $k=>$v) {
+                    foreach ($fields as $k => $v) {
                         $fields[$k] = trim($v, "'");
                     }
                 } else if (strpos($fields[0], '"') === 0) {
-                    foreach ($fields as $k=>$v) {
+                    foreach ($fields as $k => $v) {
                         $fields[$k] = trim($v, '"');
                     }
                 }
@@ -235,29 +233,45 @@ class cohortmembersync {
                     continue;
                 }
 
+                // Check user information.
                 if (!empty($fields[2])) {
-                    $user = $DB->get_record("user",
-                            array($this->params['useridentifier'] => $fields[2], 'deleted' => 0));
-                    if ($user) {
-                        $fields[2] =  $user->id;
+                    if (!array_key_exists($fields[2], $cachedusers)) {
+                        $cachedusers[$fields[2]] = 0;
+                        $user = $DB->get_record("user",
+                                array($this->params['useridentifier'] => $fields[2], 'deleted' => 0));
+                        if ($user) {
+                            $cachedusers[$fields[2]] = $user->id;
+                        }
+                    }
+                    if ($cachedusers[$fields[2]] != 0) {
+                        $fields[2] = $cachedusers[$fields[2]];
                     } else {
-                        $this->warnings[] = "User not found or deleted field 3 - ignoring line $line";
+                        $this->warnings[] = "User not found or deleted field 3 - ignoring line $line value $fields[2]";
+                        continue;
                     }
                 } else {
                     $this->warnings[] = "Empty user identifier field 3 - ignoring line $line";
                     continue;
                 }
-                
+
+                // Check cohort information.
                 if (!empty($fields[1])) {
-                    $cohort = $DB->get_record("cohort",
-                            array($this->params['cohortidentifier'] => $fields[1]));
-                    if ($cohort) {
-                        $fields[1] =  $cohort->id;
+                    if (!array_key_exists($fields[1], $cachedcohorts)) {
+                        $cachedcohorts[$fields[1]] = 0;
+                        $cohort = $DB->get_record("cohort",
+                                array($this->params['cohortidentifier'] => $fields[1]));
+                        if ($cohort) {
+                            $cachedcohorts[$fields[1]] = $cohort->id;
+                        }
+                    }
+                    if ($cachedcohorts[$fields[1]] != 0) {
+                        $fields[1] = $cachedcohorts[$fields[1]];
                     } else {
-                        $this->warnings[] = "Cohort not found field 3 - ignoring line $line";
+                        $this->warnings[] = "Cohort not found field 2 - ignoring line $line value $fields[1]";
+                        continue;
                     }
                 } else {
-                    $this->warnings[] = "Empty cohort identifier field 3 - ignoring line $line";
+                    $this->warnings[] = "Empty cohort identifier field 2 - ignoring line $line";
                     continue;
                 }
 
@@ -273,7 +287,7 @@ class cohortmembersync {
     }
 
     /**
-     * Display informations about processing cohorts data. 
+     * Display informations about processing cohorts data.
      *
      * @param string $type type of information to output.
      */
@@ -303,21 +317,25 @@ class cohortmembersync {
 
             if (isset($this->infos['usersadded'])) {
                 foreach ($this->infos['usersadded'] as $key => $count) {
-                    $varinfo = array();
-                    $varinfo['name'] = $key;
-                    $varinfo['count'] = $count;
-                    $messageusersadded = new \lang_string('useradded', 'tool_cohortsync', (object) $varinfo);
-                    $this->trace->output($messageusersadded);
+                    if ($count > 0) {
+                        $varinfo = array();
+                        $varinfo['name'] = $key;
+                        $varinfo['count'] = $count;
+                        $messageusersadded = new \lang_string('useradded', 'tool_cohortsync', (object) $varinfo);
+                        $this->trace->output($messageusersadded);
+                    }
                 }
             }
 
             if (isset($this->infos['usersdeleted'])) {
                 foreach ($this->infos['usersdeleted'] as $key => $count) {
-                    $varinfo = array();
-                    $varinfo['name'] = $key;
-                    $varinfo['count'] = $count;
-                    $messageusersadded = new \lang_string('userdeleted', 'tool_cohortsync', (object) $varinfo);
-                    $this->trace->output($messageusersadded);
+                    if ($count > 0) {
+                        $varinfo = array();
+                        $varinfo['name'] = $key;
+                        $varinfo['count'] = $count;
+                        $messageusersadded = new \lang_string('userdeleted', 'tool_cohortsync', (object) $varinfo);
+                        $this->trace->output($messageusersadded);
+                    }
                 }
             }
         }

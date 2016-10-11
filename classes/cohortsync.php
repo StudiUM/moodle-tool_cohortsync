@@ -32,6 +32,7 @@ require_once($CFG->libdir . '/csvlib.class.php');
 require_once($CFG->libdir. '/coursecatlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 
+use Exception;
 
 /**
  * Class to synchronise cohorts from a source file.
@@ -67,7 +68,6 @@ class cohortsync {
     /** @var progress_trace trace */
     protected $trace = null;
 
-
     /**
      * Class constructor.
      *
@@ -79,7 +79,7 @@ class cohortsync {
 
         $this->trace = $trace;
         if (!empty($filepath)) {
-            if (is_readable($filepath) && is_file($filepath)) {
+            if (is_readable($filepath) && is_file($filepath) && filesize($filepath) != 0) {
                 $this->filename = $filepath;
             } else {
                 $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
@@ -92,7 +92,11 @@ class cohortsync {
 
         // Define the default context.
         if (isset($params['context'])) {
-            $this->defaultcontext = \context_coursecat::instance($params['context']);
+            try {
+                $this->defaultcontext = \context_coursecat::instance($params['context']);
+            } catch (Exception $e) {
+                $this->errors[] = new \lang_string('errordefaultcontext', 'tool_cohortsync');
+            }
         } else {
             $this->defaultcontext = \context_system::instance();
         }
@@ -126,7 +130,7 @@ class cohortsync {
 
     /**
      * Get default params for chohort sync plugin.
-     * 
+     *
      * @return array params list
      */
     protected function get_defaults_params() {
@@ -282,11 +286,16 @@ class cohortsync {
     protected function clean_cohort_data(&$hash) {
         foreach ($hash as $key => $value) {
             switch ($key) {
-                case 'contextid': $hash[$key] = clean_param($value, PARAM_INT); break;
-                case 'name': $hash[$key] = \core_text::substr(clean_param($value, PARAM_TEXT), 0, 254); break;
-                case 'idnumber': $hash[$key] = \core_text::substr(clean_param($value, PARAM_RAW), 0, 254); break;
-                case 'description': $hash[$key] = clean_param($value, PARAM_RAW); break;
-                case 'descriptionformat': $hash[$key] = clean_param($value, PARAM_INT); break;
+                case 'contextid': $hash[$key] = clean_param($value, PARAM_INT);
+                    break;
+                case 'name': $hash[$key] = \core_text::substr(clean_param($value, PARAM_TEXT), 0, 254);
+                    break;
+                case 'idnumber': $hash[$key] = \core_text::substr(clean_param($value, PARAM_RAW), 0, 254);
+                    break;
+                case 'description': $hash[$key] = clean_param($value, PARAM_RAW);
+                    break;
+                case 'descriptionformat': $hash[$key] = clean_param($value, PARAM_INT);
+                    break;
                 case 'visible':
                     $tempstr = trim(\core_text::strtolower($value));
                     if ($tempstr === '') {
@@ -327,8 +336,7 @@ class cohortsync {
 
         if (!empty($hash['context'])) {
             $systemcontext = context_system::instance();
-            if ((\core_text::strtolower(trim($hash['context'])) ===
-                    \core_text::strtolower($systemcontext->get_context_name())) ||
+            if ((\core_text::strtolower(trim($hash['context'])) === \core_text::strtolower($systemcontext->get_context_name())) ||
                     ('' . $hash['context'] === '' . $systemcontext->id)) {
                 // User meant system context.
                 $hash['contextid'] = $systemcontext->id;
@@ -397,7 +405,7 @@ class cohortsync {
     }
 
     /**
-     * Display informations about processing cohorts data. 
+     * Display informations about processing cohorts data.
      *
      * @param string $type type of information to output.
      */

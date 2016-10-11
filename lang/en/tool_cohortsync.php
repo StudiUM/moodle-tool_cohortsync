@@ -23,19 +23,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['cohortidentifier'] = 'Cohort identifier';
-$string['cohortidentifierdesc'] = 'This parameter is used to identify the cohort in which to insert the member.';
 $string['cohortscreated'] = '"{$a}" cohort(s) created';
 $string['cohortsyncheader'] = 'Cohort configuration';
+$string['cohortidentifier'] = 'Cohort identifier';
+$string['cohortidentifierdesc'] = 'This parameter is used to identify the cohort in which to insert the member.';
 $string['cohortmembersyncheader'] = 'Cohort member configuration';
 $string['csvdelimiter'] = 'CSV delimiter';
-$string['flatfiledelimiter'] = 'Flat file delimiter';
 $string['encoding'] = 'Encoding';
+$string['errordefaultcontext'] = 'Default context does not exist';
 $string['errordelimiterfile'] = 'Only these delimeters are allowed: comma, semicolon, colon, tab';
 $string['errorreadingfile'] = 'The CSV file "{$a}" is not readable or does not exist.';
 $string['errorreadingdefaultfile'] = 'The default CSV file "{$a}" is not readable or does not exist.';
 $string['erroruseridentifier'] = 'Only these user identifiers are allowed: user_id, username, user_idnumber';
 $string['filepathsource'] = 'The path to the source file';
+$string['flatfiledelimiter'] = 'Flat file delimiter';
 $string['formatcsv'] = 'CSV file format';
 $string['formatcsvdesc'] = 'The following formats are allowed<br>
         <pre>name,idnumber,description,descriptionformat,contextid,visible,username</pre><br>
