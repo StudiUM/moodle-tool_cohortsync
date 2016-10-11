@@ -75,10 +75,10 @@ class cohortmembersync {
             if (is_readable($filepath) && is_file($filepath) && filesize($filepath) != 0) {
                 $this->filename = $filepath;
             } else {
-                $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
+                $this->errors[] = "The file '$filepath' is not readable or does not exist.";
             }
         } else {
-            $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
+            $this->errors[] = "The file '$filepath' is not readable or does not exist.";
         }
 
         $this->params = $this->get_defaults_params();
@@ -105,9 +105,8 @@ class cohortmembersync {
      * Update cohorts members.
      */
     public function update_cohortsmembers() {
-        global $DB;
 
-        // Prepare cohorts members data from CSV file.
+        // Prepare cohorts members data from file.
         $data = $this->process_file();
 
         if (empty($this->errors) && !empty($data)) {
@@ -289,21 +288,20 @@ class cohortmembersync {
     /**
      * Display informations about processing cohorts data.
      *
-     * @param string $type type of information to output.
      */
-    public function output_result($type = 'all') {
+    public function output_result() {
 
-        if (!empty($this->errors) && ($type == 'all' || $type == 'error')) {
-            $errormessage = new \lang_string('csvcontainserrors', 'cohort');
+        if (!empty($this->errors)) {
+            $errormessage = 'Errors were found in file data. See details below.';
             $this->trace->output($errormessage);
 
             foreach ($this->errors as $key => $error) {
-                $this->trace->output($key . ": " . $error);
+                $this->trace->output($error);
             }
         }
 
-        if (!empty($this->warnings) && ($type == 'all' || $type == 'warning')) {
-            $warningsmessage = new \lang_string('csvcontainswarnings', 'cohort');
+        if (!empty($this->warnings)) {
+            $warningsmessage = 'Warnings were found in file data. See details below.';
             $this->trace->output($warningsmessage);
 
             foreach ($this->warnings as $warning) {
@@ -311,18 +309,14 @@ class cohortmembersync {
             }
         }
 
-        if (!empty($this->infos) && ($type == 'all' || $type == 'info')) {
-            $infomessage = new \lang_string('info');
-            $this->trace->output($infomessage . "\n");
+        if (!empty($this->infos)) {
+            $this->trace->output("Information");
 
             if (isset($this->infos['usersadded'])) {
                 foreach ($this->infos['usersadded'] as $key => $count) {
                     if ($count > 0) {
-                        $varinfo = array();
-                        $varinfo['name'] = $key;
-                        $varinfo['count'] = $count;
-                        $messageusersadded = new \lang_string('useradded', 'tool_cohortsync', (object) $varinfo);
-                        $this->trace->output($messageusersadded);
+                        $m = "'$count' user(s) have been added to the cohort '$key'";
+                        $this->trace->output($m);
                     }
                 }
             }
@@ -330,11 +324,8 @@ class cohortmembersync {
             if (isset($this->infos['usersdeleted'])) {
                 foreach ($this->infos['usersdeleted'] as $key => $count) {
                     if ($count > 0) {
-                        $varinfo = array();
-                        $varinfo['name'] = $key;
-                        $varinfo['count'] = $count;
-                        $messageusersadded = new \lang_string('userdeleted', 'tool_cohortsync', (object) $varinfo);
-                        $this->trace->output($messageusersadded);
+                        $m = "'$count' user(s) have been removed from the cohort '$key'";
+                        $this->trace->output($m);
                     }
                 }
             }

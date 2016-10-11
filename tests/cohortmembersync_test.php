@@ -167,7 +167,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-         // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort memebers are created.
         $this->assertEmpty($cohortmembersync->get_errors());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
@@ -193,7 +193,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-         // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort memebers are created.
         $this->assertEmpty($cohortmembersync->get_errors());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
@@ -219,7 +219,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-         // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort memebers are created.
         $this->assertEmpty($cohortmembersync->get_errors());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
@@ -395,7 +395,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortmembersync->get_errors()));
         $errormsg = $cohortmembersync->get_errors()[0];
-        $this->assertContains('is not readable or does not exist', $errormsg->out());
+        $this->assertContains('is not readable or does not exist', $errormsg);
     }
 
     /**
@@ -409,7 +409,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortmembersync->get_errors()));
         $errormsg = $cohortmembersync->get_errors()[0];
-        $this->assertContains('is not readable or does not exist', $errormsg->out());
+        $this->assertContains('is not readable or does not exist', $errormsg);
     }
 
     /**

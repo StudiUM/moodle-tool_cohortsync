@@ -32,30 +32,11 @@ $string['csvdelimiter'] = 'Délimiteur CSV';
 $string['encoding'] = 'Encodage';
 $string['errordefaultcontext'] = "Le context de défaut n'existe pas'";
 $string['errordelimiterfile'] = 'Seuls ces délimiteurs sont autorisés: comma, semicolon, colon, tab';
-$string['errorreadingfile'] = 'Le fichier CSV "{$a}" n\'est pas lisible ou n\'existe pas';
-$string['errorreadingdefaultfile'] = 'Le fichier CSV par défaut "{$a}" n\'est pas lisible ou n\'existe pas';
+$string['errorreadingfile'] = 'Le fichier "{$a}" n\'est pas lisible ou n\'existe pas';
 $string['erroruseridentifier'] = 'Seuls ces identifiants utilisateur sont autorisés: user_id, username, user_idnumber';
 $string['filepathsource'] = 'Le chemin vers le fichier source';
 $string['flatfiledelimiter'] = 'Délimiteur du fichier';
-$string['formatcsv'] = 'Format du fichier CSV';
-$string['formatcsvdesc'] = 'Les formats suivants sont autorisés<br>
-        <pre>name,idnumber,description,descriptionformat,contextid,visible,username</pre><br>
-        Le "username" est utilisé comme identifiant de l\'utilisateur on peut aussi utiliser "user_id" ou  "user_idnumber"<br>
-        Si "visible" est non renseigné, il sera visible par défaut: les valeurs acceptées sont: "no" ou 0 pour non visible et "yes" ou 1 pour visible<br>
-        "descriptionformat" est le type de format choisit pour la description:<br>
-            0 = Moodle auto-format<br>
-            1 = HTML format<br>
-            2 = Plain text format<br>
-            4 = Markdown format<br><br>
-        Si le "contextid" est non trouvé le context système sera utilisé<br><br>
-        Tous les champs sauf ceux de l\'utilisateur (user_id, user_idnumber, username), sont associés à la cohorte<br><br>
-        <pre>name,idnumber,description,descriptionformat,category_name,visible,username</pre><br>
-        On peut utiliser le "category_name" pour récuperer le context, si la categorie est non trouvé le contexte système sera utilisé<br>
-        On peut aussi remplacer le "category_name" par "category_path", "category_id" ou "category_idnumber"';
-$string['idnumbercolumnmissing'] = 'La colonne "idnumber" est manquant';
+$string['formatcsvdesc'] = '';
 $string['pluginname'] = 'Synchronisation des cohortes';
-$string['notfounduser'] = 'L\'utilisateur "{$a}" non trouvé dans la base de donnée';
-$string['useradded'] = '"{$a->count}" utilisateur(s) ont été supprimé(s) de la cohorte "{$a->name}"';
-$string['userdeleted'] = '"{$a->count}" utilisateur(s) ont été ajouté(s) à la cohorte "{$a->name}"';
 $string['useridentifier'] = 'Identifiant de l\'utilisateur';
 $string['useridentifierdesc'] = 'Ce paramètre est utilisé pour identifier l\'utilisateur qui va être associé à la cohorte.';
