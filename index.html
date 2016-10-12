@@ -141,6 +141,37 @@ cohort name 6,cohortid6,,CAT3,1
 <h3>
 <a id="cohort-member-synchronization" class="anchor" href="#cohort-member-synchronization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cohort member synchronization</h3>
 
+<p>To synchronize cohorts members from script CLI, you have to execute the script like this:</p>
+
+<pre><code>php admin/tool/cohortsync/cli/cohortmembersync.php --filepath=/pathfile/ --cohortidentifier=name --useridentifier=id --flatfiledelimiter=comma --flatfileencoding=UTF-8
+</code></pre>
+
+<ul>
+<li>filepath: The location of the flatfile to be processed.</li>
+<li>cohortidentifier: Which field will be used to identify cohort, if not given the default value in the page settings will be used.</li>
+<li>useridentifier: Which field will be used to identify user, if not given the default value in the page settings will be used</li>
+<li>flatfiledelimite: the file delimiter, if not given the default value in the page settings will be used.</li>
+<li>flatfileencoding: the file encoding, if not given the default value in the page settings will be used.</li>
+</ul>
+
+<p>Here an example of flatfile that can be used:</p>
+
+<pre>
+   add, my cohort A, 2
+   add, my cohort A, 3
+   add, my cohort B, 6
+   del, my cohort B, 14
+   del, my cohort C, 75
+   add, my cohort C, 30
+</pre>
+
+<p>For more details about the script CLI, run this command:</p>
+
+<pre><code>php admin/tool/cohortsync/cli/cohortmembersync.php --help
+</code></pre>
+
+<p><img src="http://shorturl.ca/images/cohortmembersync.PNG" alt="Cohort sync help"></p>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/StudiUM/moodle-tool_cohortsync">Moodle-tool cohortsync</a> is maintained by <a href="https://github.com/StudiUM">StudiUM</a>.</span>
 
