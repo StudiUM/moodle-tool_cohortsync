@@ -62,20 +62,40 @@ There are 2 scripts CLI to do the synchronization.
 
 <hr>
 
+<h3>
+<a id="cohorts-synchronization" class="anchor" href="#cohorts-synchronization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cohorts synchronization</h3>
+
 <p>Since cohort synchronization is based on Upload cohorts (core), the full description is found <a href="https://docs.moodle.org/31/en/Upload_cohorts">here</a></p>
 
-<p>The following formats are allowed</p>
+<h3>
+<a id="cohorts-members-synchronization" class="anchor" href="#cohorts-members-synchronization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cohorts members synchronization</h3>
 
-<pre><code>name,idnumber,description,descriptionformat,contextid,visible,username
+<p>The file is a comma separated file (or any other delimiter set in the plugin page settings or as a param in the script CLI) assumed to have three fields per line:</p>
+
+<pre><code>operation, cohortidentifier, useridentifier
 </code></pre>
 
-<p>The "username" is used as an identifier of the user can also use "user_id" or "user_idnumber"
-If "visible" is not specified, it will be visible by default: Valid values are: "no" or 0 for no visible and "yes" or 1 for visible
-"descriptionformat" is the type of chosen format for the description:
-0 = Moodle auto-format
-1 = HTML format
-2 = Plain text format
-4 = Markdown format</p>
+<p>where:</p>
+
+<ul>
+<li>operation - add | del</li>
+<li>role - student | teacher | teacheredit</li>
+<li>user idnumber - idnumber in the user table NB not id</li>
+<li>course idnumber - idnumber in the course table NB not id</li>
+<li>starttime - start time (in seconds since epoch) - optional</li>
+<li>endtime - end time (in seconds since epoch) - optional</li>
+</ul>
+
+<p>It could look something like this:</p>
+
+<pre>
+   add, cohort1id, username1
+   add, cohort2id, username2
+   add, cohort2id, username3
+   del, cohort3id, username4
+   del, cohort4id, username5
+   add, cohort4id, username5
+</pre>
 
 <p>If the "contextid" is not found the context system will be used</p>
 
