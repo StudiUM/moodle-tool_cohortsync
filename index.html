@@ -27,7 +27,7 @@
 <p>This plugin allows the synchronization of cohorts and members in cohorts from the command line.
 There are 2 scripts CLI to do the synchronization.
 1. cohortsync.php
-2. cohortmemberssync.php</p>
+2. cohortmembersync.php</p>
 
 <h2>
 <a id="the-plugin-configuration-page" class="anchor" href="#the-plugin-configuration-page" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The plugin configuration page</h2>
@@ -37,7 +37,14 @@ There are 2 scripts CLI to do the synchronization.
 <p>There are two level configuration:</p>
 
 <h3>
-<a id="settings-for-synchronization-cohorts" class="anchor" href="#settings-for-synchronization-cohorts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Settings for synchronization cohorts</h3>
+<a id="settings-for-synchronization-cohorts" class="anchor" href="#settings-for-synchronization-cohorts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Settings for synchronization cohorts</strong>
+</h3>
+
+<ul>
+<li><p>CSV delimiter: CSV delimiter of the cohorts file, this option will be used as default value if no option given for the CLI</p></li>
+<li><p>encoding: The type of encoding file, this option will be used as default value if no option given for the CLI</p></li>
+<li><p>default category: the default context category of the cohorts, if in the cohorts CSV file the category context is not filled or not found, this category will be used.</p></li>
+</ul>
 
 <h3>
 <a id="formats-description" class="anchor" href="#formats-description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Formats description</h3>
