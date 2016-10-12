@@ -1,16 +1,17 @@
 ### Plugin description
 ***
 
-This plugin allows the synchronization of members in cohorts from the command line, a CSV file will be required.
-* If the cohort does not exist, it will be created (if the "Create cohort if It Does not exists" is checked)
-* Identification of the cohort is based on "idnumber"
-* The identification of a member in the CSV file is based on the parmètre "User Login"
-* Inexistant member will be ignored
+This plugin allows the synchronization of cohorts and members in cohorts from the command line. There are 2 scripts CLI to do the synchronization.
+
+* cohortsync.php
+* cohortmembersync.php
 
 
 ### Usage
 ***
 
-![CohortSync Plugin documentation](http://shorturl.ca/images/cohortsync.PNG)
+![Cohort sync help](http://shorturl.ca/images/cohortsync.PNG)
+
+![Cohort sync help](http://shorturl.ca/images/cohortmembersync.PNG)
 
 [See full documentation](https://studium.github.io/moodle-tool_cohortsync/)
