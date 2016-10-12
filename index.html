@@ -96,18 +96,28 @@ There are 2 scripts CLI to do the synchronization.
    add, cohort4id, username5
 </pre>
 
-<p>If the "contextid" is not found the context system will be used</p>
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>All fields except the user (user_id, user_idnumber, username), are associated with cohort</p>
-
-<pre><code>name,idnumber,description,descriptionformat,category_name,visible,username
-</code></pre>
-
-<p>We can use the "category_name" to get the context, if the category is not found the system context will be used
-You can also replace the "category_name" by "category_path", "category_id" or "category_idnumber"</p>
+<hr>
 
 <h3>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3>
+<a id="cohort-synchronization" class="anchor" href="#cohort-synchronization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cohort synchronization</h3>
+
+<p>To synchronize cohorts from script CLI, to have to execute this script like this:</p>
+
+<pre><code>php admin/tool/cohortsync/cli/cohortsync.php --filepath=/pathfile/ --csvdelimeter=comma --csvencoding=UTF-8 --context=system
+</code></pre>
+
+<ul>
+<li>filepath: The location of the csv file to be processed.</li>
+<li>context: If the "context" is not found the default context in page settings will be used.</li>
+<li>csvdelimeter: the csv delimiter, if not given the default value in the page settings will be used.</li>
+<li>csvencoding: the file encoding, if not given the default value in the page settings will be used.</li>
+</ul>
+
+<h3>
+<a id="usage-1" class="anchor" href="#usage-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3>
 
 <hr>
 
