@@ -37,13 +37,24 @@ There are 2 scripts CLI to do the synchronization.
 <p>There are two level configuration:</p>
 
 <h3>
-<a id="settings-for-synchronization-cohorts" class="anchor" href="#settings-for-synchronization-cohorts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Settings for synchronization cohorts</strong>
+<a id="settings-for-cohorts-synchronization" class="anchor" href="#settings-for-cohorts-synchronization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Settings for cohorts synchronization</strong>
 </h3>
 
 <ul>
-<li><p>CSV delimiter: CSV delimiter of the cohorts file, this option will be used as default value if no option given for the CLI</p></li>
-<li><p>encoding: The type of encoding file, this option will be used as default value if no option given for the CLI</p></li>
+<li><p>CSV delimiter: CSV delimiter of the cohorts file, this option will be used as default value if no delimiter option given for the CLI</p></li>
+<li><p>encoding: The type of encoding file, this option will be used as default value if no encoding option given for the CLI</p></li>
 <li><p>default category: the default context category of the cohorts, if in the cohorts CSV file the category context is not filled or not found, this category will be used.</p></li>
+</ul>
+
+<h3>
+<a id="settings-for-cohorts-members-synchronization" class="anchor" href="#settings-for-cohorts-members-synchronization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Settings for cohorts members synchronization</strong>
+</h3>
+
+<ul>
+<li><p>User identifier: This parameter is used to identify the user who will be added to the cohort, those values are allowed: id, username, idnumber. If the param useridentifier is no given to the CLI script, this value will be used.</p></li>
+<li><p>Cohort identifier: This parameter is used to identify the cohort in which to insert the member, those values are allowed: id, name, idnumber. If the param cohortidentifier is no given to the CLI script, this value will be used.</p></li>
+<li><p>CSV delimiter: Delimiter of the cohorts members file, this option will be used as default value if no delimiter option given for the CLI</p></li>
+<li><p>encoding: The type of encoding file, this option will be used as default value if no encoding option given for the CLI</p></li>
 </ul>
 
 <h3>
