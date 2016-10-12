@@ -29,6 +29,7 @@ define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
+require_once($CFG->libdir . '/weblib.php');
 require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
 
 // Now get cli options.
@@ -37,25 +38,22 @@ list($options, $unrecognized) = cli_get_params(
             'help' => false,
             'filepath' => false,
             'csvdelimiter' => false,
-            'encoding' => false,
-            'createcohort' => false,
-            'useridentifier' => false,
-            'context' => false),
+            'csvencoding' => false,
+            'context' => false,
+            'verbose' => false),
         array(
             'h' => 'help',
             'f' => 'filepath',
             'd' => 'csvdelimiter',
-            'e' => 'encoding',
-            'c' => 'createcohort',
-            'u' => 'useridentifier',
-            'ctx' => 'context')
+            'e' => 'csvencoding',
+            'ctx' => 'context',
+            'v' => 'verbose')
 );
 
 if ($options['help']) {
-    $help = "Perform Cohort Synchronization.
+    $help = "Perform Cohort Synchronisation.
 
-    This script synchronize cohorts from csv file with cohorts in Moodle database
-    The members existing in csv file but not in Moodle cohorts will be ignored.
+    This script synchronize cohorts from csv file with cohorts in Moodle database.
 
     Options:
     -h, --help            Print out this help
@@ -64,18 +62,14 @@ if ($options['help']) {
     -d, --csvdelimiter    The csv delimiter used in the file
                           these delimiters are considered 'comma', 'semicolon', 'colon', 'tab'
                           Default: the value defined in the plugin setting
-    -e, --encoding        The encoding of the file.
-                          Default: the value defined in the plugin setting
-    -c, --createcohort    Indicate to create cohort if it does not exist. Possible values: true, false.
-                          Default: the value defined in the plugin setting
-    -u, --useridentifier  The column used to identify user in the database
-                          These idetenfiers are considered: username, user_idnumber, user_id
+    -e, --csvencoding        The encoding of the file.
                           Default: the value defined in the plugin setting
     -ctx, --context       The category ID matching the context of the cohort
                           Default: system
+    -v, --verbose         Print verbose progress information
 
     Example:
-    \$ sudo -u www-data /usr/bin/php admin/tool/cohortsync/cli/cohortsync.php -u=user_idnumber -f=/app/data/cohort/csv/file.csv
+    \$ sudo -u www-data /usr/bin/php admin/tool/cohortsync/cli/cohortsync.php  -f=/app/data/cohort/csv/file.csv
     ";
 
     echo $help;
@@ -84,11 +78,10 @@ if ($options['help']) {
 
 $params = array(
     'help',
+    'verbose',
     'filepath',
     'csvdelimiter',
-    'encoding',
-    'createcohort',
-    'useridentifier',
+    'csvencoding',
     'context'
 );
 foreach ($params as $param) {
@@ -99,23 +92,27 @@ foreach ($params as $param) {
 // Emulate normal session.
 cron_setup_user();
 
-// Cast boolean params.
-if (isset($options['createcohort'])) {
-    $options['createcohort'] = ($options['createcohort'] === 'false' || $options['createcohort'] === '0') ? false : true;
+if (empty($options['verbose'])) {
+    $trace = new \null_progress_trace();
+} else {
+    $trace = new \text_progress_trace();
 }
 
 $filename = (isset($options['filepath']) && !empty($options['filepath'])) ? $options['filepath'] : '';
 // Initialise the timer.
 $starttime = microtime();
 
-$cohortsync = new cohortsync($filename,  $options);
-$cohortsync->update_cohorts();
+$cohortsync = new cohortsync($trace, $filename,  $options);
+
+if (!$cohortsync->get_errors()) {
+    $cohortsync->update_cohorts();
+}
 $cohortsync->output_result();
 
 // Start output log.
 $timenow = time();
 
-mtrace("Server Time: " . date('r', $timenow) . "\n\n");
+$trace->output("Server Time: " . date('r', $timenow) . "\n\n");
 
 $difftime = microtime_diff($starttime, microtime());
-mtrace("Execution took " . floor($difftime) . " seconds");
+$trace->output("Execution took " . floor($difftime) . " seconds");

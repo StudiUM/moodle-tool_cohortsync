@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
+require_once($CFG->libdir . '/weblib.php');
 
 /**
  * Tests for tool_cohortsync.
@@ -40,15 +41,21 @@ require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
  */
 class tool_cohortsync_testcase extends advanced_testcase {
 
+    /** @var progress_trace trace */
+    protected $trace = null;
+
+    /** @var array common columns in header */
+    protected $commonheader = null;
+
     /**
      * Loads the database with test data.
      */
     public static function setUpBeforeClass() {
 
-        set_config('useridentifier', 'username', 'tool_cohortsync');
         set_config('csvdelimiter', 'comma', 'tool_cohortsync');
-        set_config('encoding', 'UTF-8', 'tool_cohortsync');
-        set_config('createcohort', 1, 'tool_cohortsync');
+        set_config('csvencoding', 'UTF-8', 'tool_cohortsync');
+        set_config('defaultcontext', 'System', 'tool_cohortsync');
+
     }
 
     /**
@@ -58,132 +65,293 @@ class tool_cohortsync_testcase extends advanced_testcase {
     public function setUp() {
         $this->resetAfterTest();
         $this->setAdminUser();
+        $this->commonheader = array('name', 'idnumber', 'description', 'visible');
+        $this->trace = new \null_progress_trace();
 
     }
 
     /**
-     * Tests cohort synchronisation.
+     * Tests cohort synchronisation with column category containing category name.
      */
-    public function test_cohortsync() {
-        global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_username.csv';
-        set_config('filepathsource', $csvfilename, 'tool_cohortsync');
+    public function test_cohortsync_with_column_category_as_name() {
+        global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
         $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
 
-        $user1 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User1',
-            'lastname' => 'User1',
-            'username' => 'user1',
-            'email' => 'nomail+user1@test.com'));
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, 'CAT1');
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, 'CAT2');
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, 'CAT2');
 
-        $user2 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User2',
-            'lastname' => 'User2',
-            'username' => 'user2',
-            'email' => 'nomail+user2@test.com'));
+        $extraheader = array('category');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
-        $user3 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User3',
-            'lastname' => 'User3',
-            'username' => 'user3',
-            'email' => 'nomail+user3@test.com'));
-        $cohortsync = new cohortsync();
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
         $cohortsync->update_cohorts();
-
         $this->assertEmpty($cohortsync->get_errors());
 
         $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
         $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
-
-        $this->assertTrue(cohort_is_member($cohort1->id, $user1->id));
-        $this->assertTrue(cohort_is_member($cohort1->id, $user2->id));
-        $this->assertTrue(cohort_is_member($cohort1->id, $user3->id));
-
-        $this->assertTrue(cohort_is_member($cohort2->id, $user1->id));
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
 
         $contextcat1 = context_coursecat::instance($cat1->id);
         $contextcat2 = context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
+
     }
 
     /**
-     * Tests cohort synchronisation with user idnumber specified.
+     * Tests cohort synchronisation with column category containing category id.
      */
-    public function test_cohortsync_withuseridnumber() {
-        global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_withuseridnumber.csv';
-        set_config('filepathsource', $csvfilename, 'tool_cohortsync');
-        set_config('useridentifier', 'user_idnumber', 'tool_cohortsync');
+    public function test_cohortsync_with_column_category_as_id() {
+        global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
         $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
 
-        $user1 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User1',
-            'lastname' => 'User1',
-            'username' => 'user1',
-            'idnumber' => 'user1idnumber',
-            'email' => 'nomail+user1@test.com'));
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->id);
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->id);
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->id);
 
-        $user2 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User2',
-            'lastname' => 'User2',
-            'username' => 'user2',
-            'idnumber' => 'user2idnumber',
-            'email' => 'nomail+user2@test.com'));
+        $extraheader = array('category');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
-        $user3 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User3',
-            'lastname' => 'User3',
-            'username' => 'user3',
-            'idnumber' => 'user3idnumber',
-            'email' => 'nomail+user3@test.com'));
-        $cohortsync = new cohortsync();
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
         $cohortsync->update_cohorts();
 
         $this->assertEmpty($cohortsync->get_errors());
 
         $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
         $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
-
-        $this->assertTrue(cohort_is_member($cohort1->id, $user1->id));
-        $this->assertTrue(cohort_is_member($cohort1->id, $user2->id));
-        $this->assertTrue(cohort_is_member($cohort1->id, $user3->id));
-
-        $this->assertTrue(cohort_is_member($cohort2->id, $user1->id));
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
 
         $contextcat1 = context_coursecat::instance($cat1->id);
         $contextcat2 = context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
+    }
+
+    /**
+     * Tests cohort synchronisation with column category containing category idnumber.
+     */
+    public function test_cohortsync_with_column_category_as_idnumber() {
+        global $DB;
+
+        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1', 'idnumber' => 'IDNBCAT1'));
+        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2', 'idnumber' => 'IDNBCAT2'));
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->idnumber);
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->idnumber);
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->idnumber);
+
+        $extraheader = array('category');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
+        $cohortsync->update_cohorts();
+
+        $this->assertEmpty($cohortsync->get_errors());
+
+        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
+        $this->assertEquals('cohortid1', $cohort1->idnumber);
+        $this->assertEquals('cohortid2', $cohort2->idnumber);
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
+
+        $contextcat1 = context_coursecat::instance($cat1->id);
+        $contextcat2 = context_coursecat::instance($cat2->id);
+
+        $this->assertEquals($contextcat1->id, $cohort1->contextid);
+        $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
+    }
+
+    /**
+     * Tests cohort synchronisation with column category containing category id.
+     */
+    public function test_cohortsync_with_column_contextid() {
+        global $DB;
+
+        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
+        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+
+        $contextcat1 = context_coursecat::instance($cat1->id);
+        $contextcat2 = context_coursecat::instance($cat2->id);
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $contextcat1->id);
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $contextcat2->id);
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $contextcat2->id);
+
+        $extraheader = array('contextid');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
+        $cohortsync->update_cohorts();
+
+        $this->assertEmpty($cohortsync->get_errors());
+
+        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
+        $this->assertEquals('cohortid1', $cohort1->idnumber);
+        $this->assertEquals('cohortid2', $cohort2->idnumber);
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
+
+        $this->assertEquals($contextcat1->id, $cohort1->contextid);
+        $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
+    }
+
+    /**
+     * Tests cohort synchronisation with column category_id containing category id.
+     */
+    public function test_cohortsync_with_column_category_id() {
+        global $DB;
+
+        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
+        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->id);
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->id);
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->id);
+
+        $extraheader = array('category_id');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
+        $cohortsync->update_cohorts();
+
+        $this->assertEmpty($cohortsync->get_errors());
+
+        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
+        $this->assertEquals('cohortid1', $cohort1->idnumber);
+        $this->assertEquals('cohortid2', $cohort2->idnumber);
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
+
+        $contextcat1 = context_coursecat::instance($cat1->id);
+        $contextcat2 = context_coursecat::instance($cat2->id);
+
+        $this->assertEquals($contextcat1->id, $cohort1->contextid);
+        $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
+    }
+
+    /**
+     * Tests cohort synchronisation with column category_idnumber containing the category idnumber.
+     */
+    public function test_cohortsync_with_column_category_idnumber() {
+        global $DB;
+
+        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1', 'idnumber' => 'IDNBCAT1'));
+        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2', 'idnumber' => 'IDNBCAT2'));
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->idnumber);
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->idnumber);
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->idnumber);
+
+        $extraheader = array('category_idnumber');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
+        $cohortsync->update_cohorts();
+
+        $this->assertEmpty($cohortsync->get_errors());
+
+        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
+        $this->assertEquals('cohortid1', $cohort1->idnumber);
+        $this->assertEquals('cohortid2', $cohort2->idnumber);
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
+
+        $contextcat1 = context_coursecat::instance($cat1->id);
+        $contextcat2 = context_coursecat::instance($cat2->id);
+
+        $this->assertEquals($contextcat1->id, $cohort1->contextid);
+        $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
+    }
+
+    /**
+     * Tests cohort synchronisation with column category_path.
+     */
+    public function test_cohortsync_with_column_category_path() {
+        global $DB;
+
+        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
+        $cat2 = $this->getDataGenerator()->create_category(array('parent' => $cat1->id, 'name' => 'CAT2'));
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, 'CAT1');
+        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, 'CAT1 / CAT2');
+        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, 'CAT1 / CAT2');
+
+        $extraheader = array('category_path');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
+        $cohortsync->update_cohorts();
+
+        $this->assertEmpty($cohortsync->get_errors());
+
+        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
+        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+
+        $this->assertEquals('cohortid1', $cohort1->idnumber);
+        $this->assertEquals('cohortid2', $cohort2->idnumber);
+        $this->assertEquals('cohortid3', $cohort3->idnumber);
+
+        $contextcat1 = context_coursecat::instance($cat1->id);
+        $contextcat2 = context_coursecat::instance($cat2->id);
+
+        $this->assertEquals($contextcat1->id, $cohort1->contextid);
+        $this->assertEquals($contextcat2->id, $cohort2->contextid);
+        $this->assertEquals($contextcat2->id, $cohort3->contextid);
     }
 
     /**
      * Tests cohort synchronisation with default context given.
      */
     public function test_cohortsync_with_defaultcontext() {
-        global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_nocontext.csv';
+        global $DB;
 
         $defaultcat = $this->getDataGenerator()->create_category(array('name' => 'DEFAULTCAT'));
         $contextdefault = context_coursecat::instance($defaultcat->id);
 
-        $user1 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User1',
-            'lastname' => 'User1',
-            'username' => 'user1',
-            'email' => 'nomail+user1@test.com'));
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
 
-        $cohortsync = new cohortsync($csvfilename, array('context' => $defaultcat->id));
+        $extraheader = array();
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename, array('context' => $defaultcat->id));
         $cohortsync->update_cohorts();
 
         $this->assertEmpty($cohortsync->get_errors());
@@ -191,8 +359,6 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
-
-        $this->assertTrue(cohort_is_member($cohort1->id, $user1->id));
 
         $this->assertEquals($contextdefault->id, $cohort1->contextid);
     }
@@ -201,17 +367,16 @@ class tool_cohortsync_testcase extends advanced_testcase {
      * Tests cohort synchronisation with no default context given.
      * Context system will be used.
      */
-    public function test_cohortsync_with_nodefaultcontext() {
-        global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_nocontext.csv';
+    public function test_cohortsync_no_defaultcontext() {
+        global $DB;
 
-        $user1 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User1',
-            'lastname' => 'User1',
-            'username' => 'user1',
-            'email' => 'nomail+user1@test.com'));
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
 
-        $cohortsync = new cohortsync($csvfilename);
+        $extraheader = array();
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
         $cohortsync->update_cohorts();
 
         $this->assertEmpty($cohortsync->get_errors());
@@ -220,36 +385,52 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
 
-        $this->assertTrue(cohort_is_member($cohort1->id, $user1->id));
         $contextsystem = context_system::instance();
-
         $this->assertEquals($contextsystem->id, $cohort1->contextid);
+    }
+
+    /**
+     * Tests cohort synchronisation with wrong default context given.
+     */
+    public function test_cohortsync_wrong_defaultcontext() {
+        global $DB;
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
+
+        $extraheader = array();
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename, array('context' => 100));
+
+        $this->assertEquals(1, count($cohortsync->get_errors()));
+        $errormsg = $cohortsync->get_errors()[0];
+        $this->assertContains('Default context does not exist', $errormsg->out());
     }
 
     /**
      * Tests cohort synchronisation with empty file.
      */
     public function test_cohortsync_with_emptyfile() {
-        global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_empty.csv';
 
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
+        $csvfilename = $this->set_csv_file();
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
-        $this->assertContains('The CSV file is empty', $errormsg->out());
+        $this->assertContains('is not readable or does not exist', $errormsg->out());
+
     }
 
     /**
-     * Tests cohort synchronisation with no found csv file.
+     * Tests cohort synchronisation with not found csv file.
      */
     public function test_cohortsync_with_notfoundfile() {
         global $CFG;
+
         $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfound.csv';
 
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
@@ -260,10 +441,20 @@ class tool_cohortsync_testcase extends advanced_testcase {
      * Tests cohort synchronisation with no column names in the csv file.
      */
     public function test_cohortsync_with_no_columnnames() {
-        global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_nocolumnnames.csv';
 
-        $cohortsync = new cohortsync($csvfilename);
+        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
+
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->id);
+
+        $extracolums = array('category_path');
+        $columnname = false;
+
+        $header = array();
+        $extraheader = array();
+        $csvfilename = $this->set_csv_file($header, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
         $cohortsync->update_cohorts();
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
@@ -272,65 +463,21 @@ class tool_cohortsync_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests cohort synchronisation with empty idnumber.
-     */
-    public function test_cohortsync_with_emptyidnumber() {
-        global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_emptyidnumber.csv';
-
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
-
-        $this->assertEquals(4, count($cohortsync->get_errors()));
-        foreach ($cohortsync->get_errors() as $errormsg) {
-            $this->assertContains('The "idnumber" column is missing', $errormsg->out());
-        }
-    }
-
-    /**
-     * Tests cohort synchronisation with category path as a context.
-     */
-    public function test_cohortsync_withcategorypath() {
-        global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_withcategorypath.csv';
-
-        $user1 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User1',
-            'lastname' => 'User1',
-            'username' => 'user1',
-            'email' => 'nomail+user1@test.com'));
-
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('parent' => $cat1->id, 'name' => 'CAT2'));
-
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
-
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $contextcat2 = context_coursecat::instance($cat2->id);
-
-        $this->assertTrue(cohort_is_member($cohort1->id, $user1->id));
-        $this->assertEquals($contextcat2->id, $cohort1->contextid);
-
-    }
-
-    /**
      * Tests cohort synchronisation with not found category as a context.
      */
     public function test_cohortsync_warnings_when_notfoundcategory() {
-        global $CFG, $DB;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfoundcategory.csv';
+        global $DB;
 
-        $user1 = $this->getDataGenerator()->create_user(array(
-            'firstname' => 'User1',
-            'lastname' => 'User1',
-            'username' => 'user1',
-            'email' => 'nomail+user1@test.com'));
+        $cohorts = array();
+        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, 100);
 
-        $cohortsync = new cohortsync($csvfilename);
+        $extraheader = array('category_id');
+        $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
+
+        $cohortsync = new cohortsync($this->trace, $csvfilename);
         $cohortsync->update_cohorts();
 
-        $this->assertEquals(2, count($cohortsync->get_warnings()));
+        $this->assertEquals(1, count($cohortsync->get_warnings()));
         foreach ($cohortsync->get_warnings() as $warningmsg) {
             $this->assertContains("not found or you don't have permission to create a cohort there", $warningmsg->out());
         }
@@ -345,56 +492,39 @@ class tool_cohortsync_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests cohort synchronisation with not found user.
+     * Creates an CSV file.
+     *
+     * @param bool|array $header false or array of extra columns in header
+     * @param bool|array $extraheader false or array of extra columns in header
+     * @param bool|array $cohorts false or array of cohort ines to put in the file
+     * @param string $csvseparator separator used.
      */
-    public function test_cohortsync_warnings_when_notfounduser() {
-        global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfounduser.csv';
-        $defaultcat = $this->getDataGenerator()->create_category(array('name' => 'DEFAULTCAT'));
+    public function set_csv_file($header = false, $extraheader = false, $cohorts = false, $csvseparator = ',') {
 
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
+        // Creating the CSV file.
+        $filename = 'cohortsync.csv';
+        $tmpdir = make_temp_directory('cohortsync');
+        $csvfilepath = $tmpdir . '/' . $filename;
+        $fp = fopen($csvfilepath, 'w+');
 
-        $this->assertEquals(1, count($cohortsync->get_warnings()));
-        $warningmsg = $cohortsync->get_warnings()[0];
+        if (!empty($cohorts)) {
+            if (!empty($header)) {
+                // Add columns header in file.
+                $header = implode($csvseparator, $header);
+                if (!empty($extraheader)) {
+                    $header .= $csvseparator . implode($csvseparator, $extraheader);
+                }
+                fwrite($fp, $header . "\n");
+            }
 
-        $this->assertContains('User "user1" not found in database', $warningmsg->out());
+            foreach ($cohorts as $cohort) {
+                $row = implode($csvseparator, $cohort);
+                fwrite($fp, $row . "\n");
+            }
+        }
 
-    }
+        fclose($fp);
 
-    /**
-     * Tests cohort synchronisation with wrong delimiter.
-     */
-    public function test_cohortsync_withwrongdelimiter() {
-        global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_wrongdelimeter.csv';
-        set_config('csvdelimiter', 'wrongdelimiter', 'tool_cohortsync');
-
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
-
-        $this->assertEquals(1, count($cohortsync->get_errors()));
-        $errormsg = $cohortsync->get_errors()[0];
-
-        $this->assertContains('Only these delimeters are allowed: comma, semicolon, colon, tab', $errormsg->out());
-
-    }
-
-    /**
-     * Tests cohort synchronisation with wrong user identifier.
-     */
-    public function test_cohortsync_withwronguseridentifier() {
-        global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_username.csv';
-        set_config('useridentifier', 'wronguseridentifier', 'tool_cohortsync');
-
-        $cohortsync = new cohortsync($csvfilename);
-        $cohortsync->update_cohorts();
-
-        $this->assertEquals(1, count($cohortsync->get_errors()));
-        $errormsg = $cohortsync->get_errors()[0];
-
-        $this->assertContains('Only these user identifiers are allowed: user_id, username, user_idnumber', $errormsg->out());
-
+        return $csvfilepath;
     }
 }

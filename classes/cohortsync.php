@@ -32,9 +32,10 @@ require_once($CFG->libdir . '/csvlib.class.php');
 require_once($CFG->libdir. '/coursecatlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 
+use Exception;
 
 /**
- * Class to synchronise cohort and cohort members from a source file.
+ * Class to synchronise cohorts from a source file.
  *
  * @package    tool_cohortsync
  * @copyright  2016 Universite de Montreal
@@ -61,26 +62,24 @@ class cohortsync {
     /** @var array warnings if cohort or user are not found */
     protected $warnings = array();
 
-    /** @var array informations about members added and cohorts created */
-    protected $infos = array('cohorts' => 0, 'users' => array());
-
     /** @var array list of cohort data */
     protected $cohorts = array();
 
+    /** @var progress_trace trace */
+    protected $trace = null;
 
     /**
      * Class constructor.
      *
+     * @param progress_trace $trace
      * @param string $filepath the file path of the csv cohorts file
      * @param array $params Options for processing csv file
      */
-    public function __construct($filepath = null, $params = array()) {
+    public function __construct($trace, $filepath, $params = array()) {
 
-        if (empty($filepath)) {
-            $filepath = get_config('tool_cohortsync', 'filepathsource');
-        }
+        $this->trace = $trace;
         if (!empty($filepath)) {
-            if (is_readable($filepath) && is_file($filepath)) {
+            if (is_readable($filepath) && is_file($filepath) && filesize($filepath) != 0) {
                 $this->filename = $filepath;
             } else {
                 $this->errors[] = new \lang_string('errorreadingfile', 'tool_cohortsync', $filepath);
@@ -93,7 +92,11 @@ class cohortsync {
 
         // Define the default context.
         if (isset($params['context'])) {
-            $this->defaultcontext = \context_coursecat::instance($params['context']);
+            try {
+                $this->defaultcontext = \context_coursecat::instance($params['context']);
+            } catch (Exception $e) {
+                $this->errors[] = new \lang_string('errordefaultcontext', 'tool_cohortsync');
+            }
         } else {
             $this->defaultcontext = \context_system::instance();
         }
@@ -104,10 +107,6 @@ class cohortsync {
         if (!in_array($this->params['csvdelimiter'], array_keys(\csv_import_reader::get_delimiter_list()))) {
             $this->errors[] = new \lang_string('errordelimiterfile', 'tool_cohortsync');
         }
-        // Validate useridentifier.
-        if (!in_array($this->params['useridentifier'], array('user_id', 'username', 'user_idnumber'))) {
-            $this->errors[] = new \lang_string('erroruseridentifier', 'tool_cohortsync');
-        }
     }
 
     /**
@@ -117,47 +116,13 @@ class cohortsync {
         global $DB;
 
         // Prepare cohorts data from CSV file.
-        $this->process_file();
-        if (empty($this->errors) && !empty($this->cohorts)) {
-            $cohortsexist = array();
-            foreach ($this->cohorts as $cohort) {
-                $paramuserid = $this->params['useridentifier'];
-                $useridentifiervalue = (isset($cohort[$paramuserid])) ? $cohort[$paramuserid] : false;
-                $cohortid = isset($cohortsexist[$cohort['idnumber']]) ? $cohortsexist[$cohort['idnumber']] : false;
-                if ($cohortid === false) {
-                    $c = $DB->get_record('cohort', array('idnumber' => $cohort['idnumber']));
-                    if ($c) {
-                        $cohortid = $c->id;
-                    } else if ($this->params['createcohort']) {
-                        // Not found in the database so insert cohort.
-                        unset($cohort[$this->params['useridentifier']]);
-                        $cohortobject = (object) $cohort;
-                        $cohortid = cohort_add_cohort($cohortobject);
-                        $this->infos['cohorts']++;
-                    }
-                    // Store cohort in local var.
-                    $cohortsexist[$cohort['idnumber']] = $cohortid;
-                }
-                if ($useridentifiervalue) {
-                    $identifier = $this->params['useridentifier'];
-                    if ($this->params['useridentifier'] == 'user_id') {
-                        $identifier = 'id';
-                    }
-                    if ($this->params['useridentifier'] == 'user_idnumber') {
-                        $identifier = 'idnumber';
-                    }
-                    $user = $DB->get_record('user', array( $identifier => $useridentifiervalue));
-                    if ($user) {
-                        cohort_add_member($cohortid, $user->id);
-                        if (!isset($this->infos['users'][$cohort['idnumber']])) {
-                            $this->infos['users'][$cohort['idnumber']] = 1;
-                        } else {
-                            $this->infos['users'][$cohort['idnumber']]++;
-                        }
-                    } else {
-                        $this->warnings[] = new \lang_string('notfounduser', 'tool_cohortsync', $useridentifiervalue);
-                    }
-                }
+        $data = $this->process_file();
+        // Remove column names.
+        array_shift($data);
+        if (empty($this->errors) && !empty($data)) {
+            foreach ($data as $cohort) {
+                $cohortid = cohort_add_cohort((object) ($cohort));
+                $this->cohorts[] = $cohortid;
             }
         }
     }
@@ -170,10 +135,9 @@ class cohortsync {
      */
     protected function get_defaults_params() {
         return array(
-            'useridentifier' => get_config('tool_cohortsync', 'useridentifier'),
-            'createcohort' => get_config('tool_cohortsync', 'createcohort'),
+            'defaultcontext' => get_config('tool_cohortsync', 'defaultcontext'),
             'csvdelimiter' => get_config('tool_cohortsync', 'csvdelimiter'),
-            'encoding' => get_config('tool_cohortsync', 'encoding')
+            'csvencoding' => get_config('tool_cohortsync', 'encoding')
         );
     }
 
@@ -219,94 +183,12 @@ class cohortsync {
     }
 
     /**
-     * Determines in which context the particular cohort will be created
-     *
-     * @param array $hash
-     * @return array hash
-     */
-    protected function resolve_context($hash) {
-        global $DB;
-
-        if (!empty($hash['contextid'])) {
-            // Contextid was specified, verify we can post there.
-            $contextlist = $this->get_context_options();
-            if (!isset($contextlist[$hash['contextid']])) {
-                $this->warnings[] = new \lang_string('contextnotfound', 'cohort', $hash['contextid']);
-                $hash['contextid'] = $this->defaultcontext->id;
-            }
-            return $hash;
-        }
-
-        if (!empty($hash['context'])) {
-            $systemcontext = \context_system::instance();
-            $lowerconxt = \core_text::strtolower(trim($hash['context']));
-            $strlowerconxtname = \core_text::strtolower($systemcontext->get_context_name());
-            if (($lowerconxt === $strlowerconxtname) || ('' . $hash['context'] === '' . $systemcontext->id)) {
-                // User meant system context.
-                $hash['contextid'] = $systemcontext->id;
-                $contextlist = $this->get_context_options();
-                if (!isset($contextlist[$hash['contextid']])) {
-                    $this->warnings[] = new \lang_string('contextnotfound', 'cohort', $hash['context']);
-                    $hash['contextid'] = $this->defaultcontext->id;
-                }
-            }
-        }
-
-        if (!empty($hash['category_path'])) {
-            // We already have array with available categories, look up the value.
-            $contextlist = $this->get_context_options();
-            if (!$hash['contextid'] = array_search($hash['category_path'], $contextlist)) {
-                $this->warnings[] = new \lang_string('categorynotfound', 'cohort', s($hash['category_path']));
-                $hash['contextid'] = $this->defaultcontext->id;
-            }
-            return $hash;
-        }
-
-        // Now search by category id or category idnumber or category_name.
-        if (!empty($hash['category_id'])) {
-            $field = 'id';
-            $value = clean_param($hash['category_id'], PARAM_INT);
-        } else if (!empty($hash['category_idnumber'])) {
-            $field = 'idnumber';
-            $value = $hash['category_idnumber'];
-        } else if (!empty($hash['category_name'])) {
-            $field = 'name';
-            $value = $hash['category_name'];
-        } else {
-            // No category field was specified, assume default category.
-            $hash['contextid'] = $this->defaultcontext->id;
-            return $hash;
-        }
-
-        if (empty($this->categoriescache[$field][$value])) {
-            $record = $DB->get_record_sql("SELECT c.id, ctx.id contextid
-                FROM {context} ctx JOIN {course_categories} c ON ctx.contextlevel = ? AND ctx.instanceid = c.id
-                WHERE c.$field = ?", array(CONTEXT_COURSECAT, $value));
-            if ($record && ($contextlist = $this->get_context_options()) && isset($contextlist[$record->contextid])) {
-                $contextid = $record->contextid;
-            } else {
-                $this->warnings[] = new \lang_string('categorynotfound', 'cohort', s($value));
-                $contextid = $this->defaultcontext->id;
-            }
-            // Next time when we can look up and don't search by this value again.
-            $this->categoriescache[$field][$value] = $contextid;
-        }
-        $hash['contextid'] = $this->categoriescache[$field][$value];
-
-        return $hash;
-    }
-
-    /**
-     * Process file to get cohorts with their members.
+     * Process file.
      *
      * @return array
      */
     protected function process_file() {
-
-        if (!empty($this->errors)) {
-            return;
-        }
-
+        global $DB;
         // Read and parse the CSV file using csv library.
         $content = file_get_contents($this->filename);
         if (!$content) {
@@ -318,7 +200,7 @@ class cohortsync {
 
         $uploadid = \csv_import_reader::get_new_iid('cohortsync');
         $cir = new \csv_import_reader($uploadid, 'cohortsync');
-        $readcount = $cir->load_csv_content($content, $this->params['encoding'], $this->params['csvdelimiter']);
+        $readcount = $cir->load_csv_content($content, $this->params['csvencoding'], $this->params['csvdelimiter']);
         unset($content);
         if (!$readcount) {
             $this->errors[] = get_string('csvloaderror', 'error', $cir->get_error());
@@ -328,9 +210,7 @@ class cohortsync {
 
         // Check that columns include 'name' and warn about extra columns.
         $allowedcolumns = array('contextid', 'name', 'idnumber', 'description', 'descriptionformat', 'visible');
-        // Add user identifier.
-        array_push($allowedcolumns, $this->params['useridentifier']);
-        $additionalcolumns = array('context', 'category_id', 'category_idnumber', 'category_path', 'category_name');
+        $additionalcolumns = array('context', 'category', 'category_id', 'category_idnumber', 'category_path');
         $displaycolumns = array();
         $extracolumns = array();
         $columnsmapping = array();
@@ -348,11 +228,7 @@ class cohortsync {
         }
         if (!in_array('name', $columnsmapping)) {
             $this->errors[] = new \lang_string('namecolumnmissing', 'cohort');
-            return;
-        }
-        if (!in_array('idnumber', $columnsmapping)) {
-            $this->errors[] = new \lang_string('idnumbercolumnmissing', 'tool_cohortsync');
-            return;
+            return $cohorts;
         }
         if ($extracolumns) {
             $this->warnings[] = new \lang_string('csvextracolumns', 'cohort', s(join(', ', $extracolumns)));
@@ -361,38 +237,45 @@ class cohortsync {
         if (!isset($displaycolumns['contextid'])) {
             $displaycolumns['contextid'] = 'contextid';
         }
+        $cohorts[0] = $displaycolumns;
 
         // Parse data rows.
         $cir->init();
         $rownum = 0;
-        $haserrors = false;
-        $haswarnings = false;
+        $idnumbers = array();
         while ($row = $cir->next()) {
             $rownum++;
+            $cohorts[$rownum] = array();
             $hash = array();
             foreach ($row as $i => $value) {
                 if ($columnsmapping[$i]) {
                     $hash[$columnsmapping[$i]] = $value;
                 }
             }
-            $hash = $this->clean_cohort_data($hash);
-            $hash = $this->resolve_context($hash);
+            $this->clean_cohort_data($hash);
+
+            $warnings = $this->resolve_context($hash);
+            $this->warnings = array_merge($this->warnings, $warnings);
+
+            if (!empty($hash['idnumber'])) {
+                if (isset($idnumbers[$hash['idnumber']]) || $DB->record_exists('cohort', array('idnumber' => $hash['idnumber']))) {
+                    $this->errors[] = new \lang_string('duplicateidnumber', 'cohort');
+                }
+                $idnumbers[$hash['idnumber']] = true;
+            }
 
             if (empty($hash['name'])) {
-                $this->errors['line_' . ($rownum + 1)] = new \lang_string('namefieldempty', 'cohort');
-            }
-            if (empty($hash['idnumber'])) {
-                $this->errors['line_' . ($rownum + 1)] = new \lang_string('idnumbercolumnmissing', 'tool_cohortsync');
+                $this->errors[] = new \lang_string('namefieldempty', 'cohort');
             }
 
-            $cohorts[$rownum] = array_intersect_key($hash, $displaycolumns);
+            $cohorts[$rownum] = array_intersect_key($hash, $cohorts[0]);
         }
 
         // Close and unlink the temp folder and file.
         $cir->close();
         $cir->cleanup(true);
 
-        $this->cohorts = $cohorts;
+        return $cohorts;
     }
 
     /**
@@ -400,7 +283,7 @@ class cohortsync {
      *
      * @param array $hash
      */
-    protected function clean_cohort_data($hash) {
+    protected function clean_cohort_data(&$hash) {
         foreach ($hash as $key => $value) {
             switch ($key) {
                 case 'contextid': $hash[$key] = clean_param($value, PARAM_INT);
@@ -409,9 +292,9 @@ class cohortsync {
                     break;
                 case 'idnumber': $hash[$key] = \core_text::substr(clean_param($value, PARAM_RAW), 0, 254);
                     break;
-                case 'description': $hash[$key] = \clean_param($value, PARAM_RAW);
+                case 'description': $hash[$key] = clean_param($value, PARAM_RAW);
                     break;
-                case 'descriptionformat': $hash[$key] = \clean_param($value, PARAM_INT);
+                case 'descriptionformat': $hash[$key] = clean_param($value, PARAM_INT);
                     break;
                 case 'visible':
                     $tempstr = trim(\core_text::strtolower($value));
@@ -428,7 +311,97 @@ class cohortsync {
                     break;
             }
         }
-        return $hash;
+    }
+
+    /**
+     * Determines in which context the particular cohort will be created
+     *
+     * @param array $hash
+     * @return array array of warning strings
+     */
+    protected function resolve_context(&$hash) {
+        global $DB;
+
+        $warnings = array();
+
+        if (!empty($hash['contextid'])) {
+            // Contextid was specified, verify we can post there.
+            $contextoptions = $this->get_context_options();
+            if (!isset($contextoptions[$hash['contextid']])) {
+                $warnings[] = new \lang_string('contextnotfound', 'cohort', $hash['contextid']);
+                $hash['contextid'] = $this->defaultcontext->id;
+            }
+            return $warnings;
+        }
+
+        if (!empty($hash['context'])) {
+            $systemcontext = context_system::instance();
+            if ((\core_text::strtolower(trim($hash['context'])) === \core_text::strtolower($systemcontext->get_context_name())) ||
+                    ('' . $hash['context'] === '' . $systemcontext->id)) {
+                // User meant system context.
+                $hash['contextid'] = $systemcontext->id;
+                $contextoptions = $this->get_context_options();
+                if (!isset($contextoptions[$hash['contextid']])) {
+                    $warnings[] = new \lang_string('contextnotfound', 'cohort', $hash['context']);
+                    $hash['contextid'] = $this->defaultcontext->id;
+                }
+            } else {
+                // Assume it is a category.
+                $hash['category'] = trim($hash['context']);
+            }
+        }
+
+        if (!empty($hash['category_path'])) {
+            // We already have array with available categories, look up the value.
+            $contextoptions = $this->get_context_options();
+            if (!$hash['contextid'] = array_search($hash['category_path'], $contextoptions)) {
+                $warnings[] = new \lang_string('categorynotfound', 'cohort', s($hash['category_path']));
+                $hash['contextid'] = $this->defaultcontext->id;
+            }
+            return $warnings;
+        }
+
+        if (!empty($hash['category'])) {
+            // Quick search by category path first.
+            // Do not issue warnings or return here, further we'll try to search by id or idnumber.
+            $contextoptions = $this->get_context_options();
+            if ($hash['contextid'] = array_search($hash['category'], $contextoptions)) {
+                return $warnings;
+            }
+        }
+
+        // Now search by category id or category idnumber.
+        if (!empty($hash['category_id'])) {
+            $field = 'id';
+            $value = clean_param($hash['category_id'], PARAM_INT);
+        } else if (!empty($hash['category_idnumber'])) {
+            $field = 'idnumber';
+            $value = $hash['category_idnumber'];
+        } else if (!empty($hash['category'])) {
+            $field = is_numeric($hash['category']) ? 'id' : 'idnumber';
+            $value = $hash['category'];
+        } else {
+            // No category field was specified, assume default category.
+            $hash['contextid'] = $this->defaultcontext->id;
+            return $warnings;
+        }
+
+        if (empty($this->categoriescache[$field][$value])) {
+            $record = $DB->get_record_sql("SELECT c.id, ctx.id contextid
+                FROM {context} ctx JOIN {course_categories} c ON ctx.contextlevel = ? AND ctx.instanceid = c.id
+                WHERE c.$field = ?", array(CONTEXT_COURSECAT, $value));
+            if ($record && ($contextoptions = $this->get_context_options()) && isset($contextoptions[$record->contextid])) {
+                $contextid = $record->contextid;
+            } else {
+                $warnings[] = new \lang_string('categorynotfound', 'cohort', s($value));
+                $contextid = $this->defaultcontext->id;
+            }
+            // Next time when we can look up and don't search by this value again.
+            $this->categoriescache[$field][$value] = $contextid;
+        }
+        $hash['contextid'] = $this->categoriescache[$field][$value];
+
+        return $warnings;
     }
 
     /**
@@ -440,45 +413,27 @@ class cohortsync {
 
         if (!empty($this->errors) && ($type == 'all' || $type == 'error')) {
             $errormessage = new \lang_string('csvcontainserrors', 'cohort');
-            mtrace($errormessage . "\n");
+            $this->trace->output($errormessage . "\n");
 
             foreach ($this->errors as $key => $error) {
-                mtrace($key . ": " . $error . "\n");
+                $this->trace->output($key . ": " . $error . "\n");
             }
-
-            mtrace("****************** \n");
         }
 
         if (!empty($this->warnings) && ($type == 'all' || $type == 'warning')) {
             $warningsmessage = new \lang_string('csvcontainswarnings', 'cohort');
-            mtrace($warningsmessage . "\n");
+            $this->trace->output($warningsmessage);
 
             foreach ($this->warnings as $warning) {
-                mtrace($warning . "\n");
+                $this->trace->output($warning);
             }
-
-            mtrace("****************** \n");
         }
 
-        if (!empty($this->infos) && ($type == 'all' || $type == 'info')) {
+        if (count($this->cohorts) !== 0 && ($type == 'all' || $type == 'info')) {
             $infomessage = new \lang_string('info');
-            mtrace($infomessage . "\n");
-
-            $nbcohortcreated = (!empty($this->infos['cohorts'])) ? $this->infos['cohorts'] : '00';
-            $messageinfocohort = new \lang_string('cohortscreated', 'tool_cohortsync', $nbcohortcreated);
-            mtrace($messageinfocohort . "\n");
-
-            if (isset($this->infos['users'])) {
-                foreach ($this->infos['users'] as $key => $count) {
-                    $varinfo = array();
-                    $varinfo['name'] = $key;
-                    $varinfo['count'] = $count;
-                    $messageuseradded = new \lang_string('useradded', 'tool_cohortsync', (object) $varinfo);
-                    mtrace($messageuseradded . "\n");
-                }
-            }
-
-            mtrace("****************** \n");
+            $this->trace->output($infomessage);
+            $messageinfocohort = new \lang_string('cohortscreated', 'tool_cohortsync', count($this->cohorts));
+            $this->trace->output($messageinfocohort );
         }
     }
 

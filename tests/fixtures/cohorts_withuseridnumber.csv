@@ -1,5 +1,0 @@
-name,idnumber,description,category_name,visible,user_idnumber
-cohort name 1,cohortid1,first description,CAT1,,user1idnumber
-cohort name 2,cohortid2,first description,CAT2,,user1idnumber
-cohort name 1,cohortid1,first description,CAT2,,user2idnumber
-cohort name 1,cohortid1,first description,CAT2,,user3idnumber
