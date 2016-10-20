@@ -18,7 +18,7 @@
  * Strings for component 'tool_cohortsync', language 'en'.
  *
  * @package    tool_cohortsync
- * @copyright  2016 Universite de Montreal
+ * @copyright  2016 Univérsité de Montréal
  * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

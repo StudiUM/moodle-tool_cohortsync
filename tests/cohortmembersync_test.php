@@ -18,8 +18,8 @@
  * Tests for tool_cohortsync.
  *
  * @package   tool_cohortsync
- * @copyright 2016 Universite de Montreal
- * @author    Serge Gauthier <serge.gauthier.2@umontreal.ca>
+ * @copyright 2016 Université de Montréal
+ * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 use tool_cohortsync\cohortmembersync;
@@ -35,7 +35,7 @@ require_once($CFG->libdir . '/weblib.php');
  * Tests for tool_cohortmembersync.
  *
  * @package   tool_cohortsync
- * @copyright 2016 Universite de Montreal
+ * @copyright 2016 Université de Montréal
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
