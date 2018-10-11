@@ -56,7 +56,7 @@ class cohortmembersync {
     protected $warnings = array();
 
     /** @var array informations about members added or deleted */
-    protected $infos = array('usersadded' => array(), 'usersdeleted' => array());
+    protected $infos = array('usersadded' => array(), 'usersdeleted' => array(), 'others' => array());
 
     /** @var progress_trace trace */
     protected $trace = null;
@@ -69,7 +69,6 @@ class cohortmembersync {
      * @param array $params Options for processing file
      */
     public function __construct($trace, $filepath, $params = array()) {
-
         $this->trace = $trace;
         if (!empty($filepath)) {
             if (is_readable($filepath) && is_file($filepath) && filesize($filepath) != 0) {
@@ -105,11 +104,26 @@ class cohortmembersync {
      * Update cohorts members.
      */
     public function update_cohortsmembers() {
+		global $DB;
 
         // Prepare cohorts members data from file.
         $data = $this->process_file();
+		// process_file converts cohort to its id, same for the user
 
         if (empty($this->errors) && !empty($data)) {
+			// check if we have to remove everyone from the cohort first
+			if ($this->params['truncatefirst']) {
+				if (empty($data[0][1])) {
+					$this->errors[] = get_string('emptydata', 'tool_cohortsync');
+					return;
+				}
+				else {
+					// empty the cohort, no function from the cohort libs to do it but a delete does only the DB->delete for members
+					$cohortid = $data[0][1];
+					$DB->delete_records('cohort_members', array('cohortid'=>$cohortid));
+					$this->infos['others'][] = new \lang_string('cohorttruncated', 'tool_cohortsync', $cohortid);
+				}
+			}
             foreach ($data as $cohortmember) {
                 $cohortid = $cohortmember[1];
                 if ($cohortmember[0] == "add") {
@@ -142,7 +156,8 @@ class cohortmembersync {
             'useridentifier' => get_config('tool_cohortsync', 'useridentifier'),
             'cohortidentifier' => get_config('tool_cohortsync', 'cohortidentifier'),
             'flatfiledelimiter' => get_config('tool_cohortsync', 'flatfiledelimiter'),
-            'flatfileencoding' => get_config('tool_cohortsync', 'flatfileencoding')
+            'flatfileencoding' => get_config('tool_cohortsync', 'flatfileencoding'),
+            'truncatefirst' => get_config('tool_cohortsync', 'truncatefirst')
         );
     }
 
@@ -211,9 +226,9 @@ class cohortmembersync {
                     continue;
                 }
 
-                $fields[0] = trim(\core_text::strtolower($fields[0]));
-                $fields[1] = trim(\core_text::strtolower($fields[1]));
-                $fields[2] = trim(\core_text::strtolower($fields[2]));
+                //~ $fields[0] = trim(\core_text::strtolower($fields[0]));
+                //~ $fields[1] = trim(\core_text::strtolower($fields[1]));
+                //~ $fields[2] = trim(\core_text::strtolower($fields[2]));
 
                 // Deal with quoted values - all or nothing, we need to support "' in idnumbers, sorry.
                 if (strpos($fields[0], "'") === 0) {
@@ -329,6 +344,13 @@ class cohortmembersync {
                     }
                 }
             }
+			
+			// extra output added
+			if (isset($this->infos['others'])) {
+				foreach ($this->infos['others'] as $info) {
+					$this->trace->output($info);
+				}
+			}
         }
         $this->trace->finished();
     }
