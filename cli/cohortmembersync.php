@@ -41,6 +41,7 @@ list($options, $unrecognized) = cli_get_params(
             'flatfileencoding' => false,
             'cohortidentifier' => false,
             'useridentifier' => false,
+			'truncatefirst' => false,
             'verbose' => false),
         array(
             'h' => 'help',
@@ -49,6 +50,7 @@ list($options, $unrecognized) = cli_get_params(
             'e' => 'flatfileencoding',
             'c' => 'cohortidentifier',
             'u' => 'useridentifier',
+			't' => 'truncatefirst',
             'v' => 'verbose')
 );
 
@@ -72,6 +74,8 @@ if ($options['help']) {
     -u, --useridentifier      The column used to identify user in the database
                               These idetenfiers are considered: username, id, idnumber
                               Default: the value defined in the plugin setting
+    -t  --truncatefirst       Truncate/Empty the cohort first. Cohort is chosen from the first data line (supposed use is one file / cohort).
+                              Default: no truncate
     -v, --verbose             Print verbose progress information
 
     Example:
