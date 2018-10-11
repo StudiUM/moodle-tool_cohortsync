@@ -28,7 +28,9 @@ $string['cohortsyncheader'] = 'Cohort configuration';
 $string['cohortidentifier'] = 'Cohort identifier';
 $string['cohortidentifierdesc'] = 'This parameter is used to identify the cohort in which to insert the member.';
 $string['cohortmembersyncheader'] = 'Cohort member configuration';
+$string['cohorttruncated'] = 'Cohort "{$a}" truncated at the beginning';
 $string['csvdelimiter'] = 'CSV delimiter';
+$string['emptydata'] = 'Empty or wrong data';
 $string['encoding'] = 'Encoding';
 $string['errordefaultcontext'] = 'Default context does not exist';
 $string['errordelimiterfile'] = 'Only these delimeters are allowed: comma, semicolon, colon, tab';
@@ -38,6 +40,7 @@ $string['flatfiledelimiter'] = 'Flatfile delimiter';
 $string['formatcsv'] = 'CSV file format';
 $string['formatcsvdesc'] = '';
 $string['pluginname'] = 'Cohort synchronization';
+$string['truncatefirst'] = 'Empty cohort first';
 $string['useridentifier'] = 'User identifier';
 $string['useridentifierdesc'] = 'This parameter is used to identify the user who will be added to the cohort.';
 
