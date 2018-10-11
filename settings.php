@@ -64,6 +64,10 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
             1,
             $contextoptions));
 
+    $choices = csv_import_reader::get_delimiter_list();
+    $settings->add(new admin_setting_configselect('tool_cohortsync/truncatefirst',
+	get_string('truncatefirst', 'tool_cohortsync'), '', 'yes', array('yes','no')));
+
     // Cohort member configuration.
     $settings->add(new admin_setting_heading('cohortmembersyncheader',
             get_string('cohortmembersyncheader', 'tool_cohortsync'), ''));
