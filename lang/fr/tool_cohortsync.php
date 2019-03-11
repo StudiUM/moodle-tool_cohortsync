@@ -38,5 +38,6 @@ $string['filepathsource'] = 'Le chemin vers le fichier source';
 $string['flatfiledelimiter'] = 'Délimiteur du fichier';
 $string['formatcsvdesc'] = '';
 $string['pluginname'] = 'Synchronisation des cohortes';
+$string['privacy:metadata'] = 'Le plugin Synchronisation des cohortes n\'enregistre aucune donnée personnelle.';
 $string['useridentifier'] = 'Identifiant de l\'utilisateur';
 $string['useridentifierdesc'] = 'Ce paramètre est utilisé pour identifier l\'utilisateur qui va être associé à la cohorte.';

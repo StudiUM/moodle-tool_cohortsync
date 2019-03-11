@@ -38,6 +38,7 @@ $string['flatfiledelimiter'] = 'Flatfile delimiter';
 $string['formatcsv'] = 'CSV file format';
 $string['formatcsvdesc'] = '';
 $string['pluginname'] = 'Cohort synchronization';
+$string['privacy:metadata'] = 'The Cohort synchronization plugin does not store any personal data.';
 $string['useridentifier'] = 'User identifier';
 $string['useridentifierdesc'] = 'This parameter is used to identify the user who will be added to the cohort.';
 
