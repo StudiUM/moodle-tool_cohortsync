@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
-require_once($CFG->libdir. '/coursecatlib.php');
 
 if ($hassiteconfig) { // Needs this condition or there is error on login page.
     $settings = new admin_settingpage('tool_cohortsync', get_string('pluginname', 'tool_cohortsync'));
@@ -47,7 +46,7 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
 
     // GEt context for cohorts.
     $contextoptions = array();
-    $displaylist = coursecat::make_categories_list('moodle/cohort:manage');
+    $displaylist = core_course_category::make_categories_list('moodle/cohort:manage');
     // We need to index the options array by context id instead of category id and add option for system context.
     $syscontext = context_system::instance();
     if (has_capability('moodle/cohort:manage', $syscontext)) {
