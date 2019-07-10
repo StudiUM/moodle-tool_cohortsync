@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
-require_once($CFG->libdir. '/coursecatlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 
 

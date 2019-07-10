@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
-require_once($CFG->libdir. '/coursecatlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 
 use Exception;
@@ -168,7 +167,7 @@ class cohortsync {
 
         if ($this->contextlist === null) {
             $this->contextlist = array();
-            $displaylist = \coursecat::make_categories_list('moodle/cohort:manage');
+            $displaylist = \core_course_category::make_categories_list('moodle/cohort:manage');
             // We need to index the options array by context id instead of category id and add option for system context.
             $syscontext = \context_system::instance();
             if (has_capability('moodle/cohort:manage', $syscontext)) {
