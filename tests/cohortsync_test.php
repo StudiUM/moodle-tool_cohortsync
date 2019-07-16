@@ -459,7 +459,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
-        $this->assertContains('Please check that it includes column names', $errormsg->out());
+        $this->assertContains('Please check that it includes the correct column names', $errormsg->out());
     }
 
     /**
