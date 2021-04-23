@@ -74,7 +74,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
     /**
      * Create information in database.
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -309,9 +309,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         // Check there is error.
         $errors = $cohortmembersync->get_errors();
         $this->assertEquals(3, count($errors));
-        $this->assertContains('Unknown delimiter', $errors[0] );
-        $this->assertContains('Unknown user identifier', $errors[1] );
-        $this->assertContains('Unknown cohort identifier', $errors[2] );
+        $this->assertStringContainsString('Unknown delimiter', $errors[0] );
+        $this->assertStringContainsString('Unknown user identifier', $errors[1] );
+        $this->assertStringContainsString('Unknown cohort identifier', $errors[2] );
 
         // Check cohort memebers are not created.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
@@ -374,11 +374,11 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
 
         $warnings = $cohortmembersync->get_warnings();
         $this->assertEquals(5, count($warnings));
-        $this->assertContains('Unknown operation', $warnings[0] );
-        $this->assertContains('Cohort not found', $warnings[1] );
-        $this->assertContains('User not found or deleted', $warnings[2] );
-        $this->assertContains('Empty cohort identifier', $warnings[3] );
-        $this->assertContains('Empty user identifier', $warnings[4] );
+        $this->assertStringContainsString('Unknown operation', $warnings[0] );
+        $this->assertStringContainsString('Cohort not found', $warnings[1] );
+        $this->assertStringContainsString('User not found or deleted', $warnings[2] );
+        $this->assertStringContainsString('Empty cohort identifier', $warnings[3] );
+        $this->assertStringContainsString('Empty user identifier', $warnings[4] );
 
         // Check cohort memebers are not created.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
@@ -395,7 +395,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortmembersync->get_errors()));
         $errormsg = $cohortmembersync->get_errors()[0];
-        $this->assertContains('is not readable or does not exist', $errormsg);
+        $this->assertStringContainsString('is not readable or does not exist', $errormsg);
     }
 
     /**
@@ -409,7 +409,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortmembersync->get_errors()));
         $errormsg = $cohortmembersync->get_errors()[0];
-        $this->assertContains('is not readable or does not exist', $errormsg);
+        $this->assertStringContainsString('is not readable or does not exist', $errormsg);
     }
 
     /**

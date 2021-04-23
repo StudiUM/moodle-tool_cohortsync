@@ -50,7 +50,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
     /**
      * Loads the database with test data.
      */
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass(): void {
 
         set_config('csvdelimiter', 'comma', 'tool_cohortsync');
         set_config('csvencoding', 'UTF-8', 'tool_cohortsync');
@@ -62,7 +62,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
      * Set configuration value in database.
      * Deactivate display of mtrace.
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
         $this->commonheader = array('name', 'idnumber', 'description', 'visible');
@@ -405,7 +405,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
-        $this->assertContains('Default context does not exist', $errormsg->out());
+        $this->assertStringContainsString('Default context does not exist', $errormsg->out());
     }
 
     /**
@@ -418,7 +418,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
-        $this->assertContains('is not readable or does not exist', $errormsg->out());
+        $this->assertStringContainsString('is not readable or does not exist', $errormsg->out());
 
     }
 
@@ -434,7 +434,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
-        $this->assertContains('not readable or does not exist', $errormsg->out());
+        $this->assertStringContainsString('not readable or does not exist', $errormsg->out());
     }
 
     /**
@@ -459,7 +459,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
-        $this->assertContains('Please check that it includes the correct column names', $errormsg->out());
+        $this->assertStringContainsString('Please check that it includes the correct column names', $errormsg->out());
     }
 
     /**
@@ -479,7 +479,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_warnings()));
         foreach ($cohortsync->get_warnings() as $warningmsg) {
-            $this->assertContains("not found or you don't have permission to create a cohort there", $warningmsg->out());
+            $this->assertStringContainsString("not found or you don't have permission to create a cohort there", $warningmsg->out());
         }
 
         // Test no errors found when creating cohorts.
