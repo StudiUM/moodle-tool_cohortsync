@@ -140,8 +140,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check theres is no error and cohort memebers are created.
+        // Check theres is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
@@ -167,8 +168,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
@@ -193,8 +195,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
@@ -219,8 +222,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
@@ -245,8 +249,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
@@ -266,7 +271,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmember->userid = $this->user1->id;
 
         $DB->insert_record('cohort_members', $cohortmember);
-        // Check cohort memebers are not created.
+        // Check cohort members are not created.
         $this->assertEquals(1, $DB->count_records('cohort_members'));
 
         $lines = array();
@@ -277,10 +282,11 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check theres is no error and cohort memebers are created.
+        // Check theres is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
 
-        // Check cohort memebers is deleted.
+        // Check cohort members is deleted.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
 
     }
@@ -313,7 +319,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $this->assertStringContainsString('Unknown user identifier', $errors[1] );
         $this->assertStringContainsString('Unknown cohort identifier', $errors[2] );
 
-        // Check cohort memebers are not created.
+        // Check cohort members are not created.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
 
     }
@@ -343,8 +349,9 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $cohortmembersync = new cohortmembersync($this->trace, $filename, $params);
         $cohortmembersync->update_cohortsmembers();
 
-        // Check there is no error and cohort memebers are created.
+        // Check there is no error and cohort members are created.
         $this->assertEmpty($cohortmembersync->get_errors());
+        $this->assertEmpty($cohortmembersync->get_warnings());
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user1->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
@@ -380,7 +387,7 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $this->assertStringContainsString('Empty cohort identifier', $warnings[3] );
         $this->assertStringContainsString('Empty user identifier', $warnings[4] );
 
-        // Check cohort memebers are not created.
+        // Check cohort members are not created.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
 
     }

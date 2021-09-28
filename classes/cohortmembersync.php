@@ -235,8 +235,15 @@ class cohortmembersync {
                 if (!empty($fields[2])) {
                     if (!array_key_exists($fields[2], $cachedusers)) {
                         $cachedusers[$fields[2]] = 0;
-                        $user = $DB->get_record("user",
-                                array($this->params['useridentifier'] => $fields[2], 'deleted' => 0));
+
+                        $select = $DB->sql_equal($this->params['useridentifier'], ':useridentifier', false)
+                            . ' AND deleted = :deleted';
+                        $params = array(
+                            'useridentifier' => $fields[2],
+                            'deleted' => 0
+                        );
+                        $user = $DB->get_record_select('user', $select, $params);
+
                         if ($user) {
                             $cachedusers[$fields[2]] = $user->id;
                         }
@@ -256,8 +263,14 @@ class cohortmembersync {
                 if (!empty($fields[1])) {
                     if (!array_key_exists($fields[1], $cachedcohorts)) {
                         $cachedcohorts[$fields[1]] = 0;
-                        $cohort = $DB->get_record("cohort",
-                                array($this->params['cohortidentifier'] => $fields[1]));
+
+                        $select = $DB->sql_equal($this->params['cohortidentifier'], ':cohortidentifier', false);
+                        $params = array(
+                            'cohortidentifier' => $fields[1]
+                        );
+                        $cohort = $DB->get_record_select('cohort', $select, $params);
+
+
                         if ($cohort) {
                             $cachedcohorts[$fields[1]] = $cohort->id;
                         }
