@@ -479,7 +479,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_warnings()));
         foreach ($cohortsync->get_warnings() as $warningmsg) {
-            $this->assertStringContainsString("not found or you don't have permission to create a cohort there", $warningmsg->out());
+            $this->assertStringContainsString("not found or you don't have permission to create a cohort there",
+            $warningmsg->out());
         }
 
         // Test no errors found when creating cohorts.

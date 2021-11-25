@@ -17,13 +17,21 @@
  * Privacy Subsystem implementation for tool_cohortsync.
  *
  * @package    tool_cohortsync
- * @auhtor     Issam Taboubi <issam.taboubi@umontreal.ca>
+ * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
  * @copyright  2019 Université de Montréal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_cohortsync\privacy;
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Provider for tool_cohortsync.
+ *
+ * @package    tool_cohortsync
+ * @author     Issam Taboubi <issam.taboubi@umontreal.ca>
+ * @copyright  2019 Université de Montréal
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class provider implements \core_privacy\local\metadata\null_provider {
 
     /**

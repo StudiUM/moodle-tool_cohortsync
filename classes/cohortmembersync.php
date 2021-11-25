@@ -270,7 +270,6 @@ class cohortmembersync {
                         );
                         $cohort = $DB->get_record_select('cohort', $select, $params);
 
-
                         if ($cohort) {
                             $cachedcohorts[$fields[1]] = $cohort->id;
                         }
