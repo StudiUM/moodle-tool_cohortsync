@@ -22,8 +22,7 @@
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use tool_cohortsync\cohortsync;
-
+namespace tool_cohortsync;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +38,7 @@ require_once($CFG->libdir . '/weblib.php');
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_cohortsync_testcase extends advanced_testcase {
+class cohortsync_test extends \advanced_testcase {
 
     /** @var progress_trace trace */
     protected $trace = null;
@@ -99,8 +98,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $this->assertEquals('cohortid2', $cohort2->idnumber);
         $this->assertEquals('cohortid3', $cohort3->idnumber);
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
@@ -138,8 +137,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $this->assertEquals('cohortid2', $cohort2->idnumber);
         $this->assertEquals('cohortid3', $cohort3->idnumber);
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
@@ -176,8 +175,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $this->assertEquals('cohortid2', $cohort2->idnumber);
         $this->assertEquals('cohortid3', $cohort3->idnumber);
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
@@ -193,8 +192,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
         $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $cohorts = array();
         $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $contextcat1->id);
@@ -252,8 +251,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $this->assertEquals('cohortid2', $cohort2->idnumber);
         $this->assertEquals('cohortid3', $cohort3->idnumber);
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
@@ -290,8 +289,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $this->assertEquals('cohortid2', $cohort2->idnumber);
         $this->assertEquals('cohortid3', $cohort3->idnumber);
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
@@ -328,8 +327,8 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $this->assertEquals('cohortid2', $cohort2->idnumber);
         $this->assertEquals('cohortid3', $cohort3->idnumber);
 
-        $contextcat1 = context_coursecat::instance($cat1->id);
-        $contextcat2 = context_coursecat::instance($cat2->id);
+        $contextcat1 = \context_coursecat::instance($cat1->id);
+        $contextcat2 = \context_coursecat::instance($cat2->id);
 
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
@@ -343,7 +342,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
         global $DB;
 
         $defaultcat = $this->getDataGenerator()->create_category(array('name' => 'DEFAULTCAT'));
-        $contextdefault = context_coursecat::instance($defaultcat->id);
+        $contextdefault = \context_coursecat::instance($defaultcat->id);
 
         $cohorts = array();
         $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
@@ -385,7 +384,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
 
-        $contextsystem = context_system::instance();
+        $contextsystem = \context_system::instance();
         $this->assertEquals($contextsystem->id, $cohort1->contextid);
     }
 
@@ -488,7 +487,7 @@ class tool_cohortsync_testcase extends advanced_testcase {
         $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
-        $contextsystem = context_system::instance();
+        $contextsystem = \context_system::instance();
         $this->assertEquals($contextsystem->id, $cohort1->contextid);
     }
 

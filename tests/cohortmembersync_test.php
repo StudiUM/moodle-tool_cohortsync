@@ -22,8 +22,7 @@
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use tool_cohortsync\cohortmembersync;
-
+namespace tool_cohortsync;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +38,7 @@ require_once($CFG->libdir . '/weblib.php');
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_cohortmembersync_testcase extends advanced_testcase {
+class cohortmembersync_test extends \advanced_testcase {
 
     /** @var progress_trace trace */
     protected $trace = null;
@@ -88,8 +87,8 @@ class tool_cohortmembersync_testcase extends advanced_testcase {
         $this->cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
         $this->cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
 
-        $this->contextcat1 = context_coursecat::instance($this->cat1->id);
-        $this->contextcat2 = context_coursecat::instance($this->cat2->id);
+        $this->contextcat1 = \context_coursecat::instance($this->cat1->id);
+        $this->contextcat2 = \context_coursecat::instance($this->cat2->id);
 
         $this->cohort1 = $this->getDataGenerator()->create_cohort(array(
             'name' => 'Cohort1',

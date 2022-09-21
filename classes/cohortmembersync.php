@@ -226,7 +226,7 @@ class cohortmembersync {
                 }
 
                 // Check correct formatting of operation field.
-                if ($fields[0] !== "add" and $fields[0] !== "del") {
+                if ($fields[0] !== "add" && $fields[0] !== "del") {
                     $this->warnings[] = "Unknown operation in field 1 - ignoring line $line";
                     continue;
                 }
