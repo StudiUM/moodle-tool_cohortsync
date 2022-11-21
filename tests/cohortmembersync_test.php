@@ -22,7 +22,10 @@
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace tool_cohortsync;
+
+use tool_cohortsync\cohortmembersync;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,37 +40,38 @@ require_once($CFG->libdir . '/weblib.php');
  * @copyright 2016 Université de Montréal
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers \tool_cohortsync\cohortmembersync
  */
 class cohortmembersync_test extends \advanced_testcase {
 
-    /** @var progress_trace trace */
+    /** @var \progress_trace trace */
     protected $trace = null;
 
-    /** @var coursecat created */
+    /** @var \coursecat created */
     protected $cat1 = null;
 
-    /** @var coursecat created */
+    /** @var \coursecat created */
     protected $cat2 = null;
 
-    /** @var context of category 1 */
+    /** @var \context of category 1 */
     protected $contextcat1 = null;
 
-    /** @var context of category 2 */
+    /** @var \context of category 2 */
     protected $contextcat2 = null;
 
-    /** @var cohort created */
+    /** @var \cohort created */
     protected $cohort1 = null;
 
-    /** @var cohort created */
+    /** @var \cohort created */
     protected $cohort2 = null;
 
-    /** @var user created */
+    /** @var \user created */
     protected $user1 = null;
 
-    /** @var user created */
+    /** @var \user created */
     protected $user2 = null;
 
-    /** @var user created */
+    /** @var \user created */
     protected $user3 = null;
 
     /**

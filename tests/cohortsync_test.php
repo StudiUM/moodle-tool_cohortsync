@@ -22,7 +22,10 @@
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace tool_cohortsync;
+
+use tool_cohortsync\cohortsync;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,10 +40,11 @@ require_once($CFG->libdir . '/weblib.php');
  * @copyright 2016 Université de Montréal
  * @author    Issam Taboubi <issam.taboubi@umontreal.ca>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers \tool_cohortsync\cohortsync
  */
 class cohortsync_test extends \advanced_testcase {
 
-    /** @var progress_trace trace */
+    /** @var \progress_trace trace */
     protected $trace = null;
 
     /** @var array common columns in header */
