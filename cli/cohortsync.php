@@ -34,20 +34,20 @@ require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
 
 // Now get cli options.
 list($options, $unrecognized) = cli_get_params(
-        array(
+        [
             'help' => false,
             'filepath' => false,
             'csvdelimiter' => false,
             'csvencoding' => false,
             'context' => false,
-            'verbose' => false),
-        array(
+            'verbose' => false],
+        [
             'h' => 'help',
             'f' => 'filepath',
             'd' => 'csvdelimiter',
             'e' => 'csvencoding',
             'ctx' => 'context',
-            'v' => 'verbose')
+            'v' => 'verbose']
 );
 
 if ($options['help']) {
@@ -76,21 +76,21 @@ if ($options['help']) {
     die;
 }
 
-$params = array(
+$params = [
     'help',
     'verbose',
     'filepath',
     'csvdelimiter',
     'csvencoding',
-    'context'
-);
+    'context',
+];
 foreach ($params as $param) {
     if ($options[$param] === false) {
         unset($options[$param]);
     }
 }
 // Emulate normal session.
-cron_setup_user();
+\core\cron::setup_user();
 
 if (empty($options['verbose'])) {
     $trace = new \null_progress_trace();

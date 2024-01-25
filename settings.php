@@ -45,7 +45,7 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         get_string('encoding', 'tool_cohortsync'), '', 'UTF-8', $choices));
 
     // GEt context for cohorts.
-    $contextoptions = array();
+    $contextoptions = [];
     $displaylist = core_course_category::make_categories_list('moodle/cohort:manage');
     // We need to index the options array by context id instead of category id and add option for system context.
     $syscontext = context_system::instance();
@@ -67,11 +67,11 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
     $settings->add(new admin_setting_heading('cohortmembersyncheader',
             get_string('cohortmembersyncheader', 'tool_cohortsync'), ''));
 
-    $useridentifieroptions = array(
+    $useridentifieroptions = [
         'id' => 'id',
         'username' => 'username',
-        'idnumber' => 'idnumber'
-    );
+        'idnumber' => 'idnumber',
+    ];
 
     $settings->add(new admin_setting_configselect('tool_cohortsync/useridentifier',
         get_string('useridentifier', 'tool_cohortsync'),
@@ -79,11 +79,11 @@ if ($hassiteconfig) { // Needs this condition or there is error on login page.
         'username',
         $useridentifieroptions));
 
-    $cohortidentifieroptions = array(
+    $cohortidentifieroptions = [
         'id' => 'id',
         'name' => 'name',
-        'idnumber' => 'idnumber'
-    );
+        'idnumber' => 'idnumber',
+    ];
 
     $settings->add(new admin_setting_configselect('tool_cohortsync/cohortidentifier',
             new lang_string('cohortidentifier', 'tool_cohortsync'),

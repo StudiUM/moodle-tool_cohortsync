@@ -88,42 +88,42 @@ class cohortmembersync_test extends \advanced_testcase {
 
         $this->trace = new \null_progress_trace();
 
-        $this->cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $this->cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+        $this->cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
+        $this->cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2']);
 
         $this->contextcat1 = \context_coursecat::instance($this->cat1->id);
         $this->contextcat2 = \context_coursecat::instance($this->cat2->id);
 
-        $this->cohort1 = $this->getDataGenerator()->create_cohort(array(
+        $this->cohort1 = $this->getDataGenerator()->create_cohort([
             'name' => 'Cohort1',
             'idnumber' => 'ID-Coh1',
-            'contextid' => $this->contextcat1->id));
+            'contextid' => $this->contextcat1->id]);
 
-        $this->cohort2 = $this->getDataGenerator()->create_cohort(array(
+        $this->cohort2 = $this->getDataGenerator()->create_cohort([
             'name' => 'Cohort2',
             'idnumber' => 'ID-Coh2',
-            'contextid' => $this->contextcat2->id));
+            'contextid' => $this->contextcat2->id]);
 
-        $this->user1 = $this->getDataGenerator()->create_user(array(
+        $this->user1 = $this->getDataGenerator()->create_user([
             'firstname' => 'User1',
             'lastname' => 'User1',
             'username' => 'user1',
             'idnumber' => 'ID-number1',
-            'email' => 'nomail+user1@test.com'));
+            'email' => 'nomail+user1@test.com']);
 
-        $this->user2 = $this->getDataGenerator()->create_user(array(
+        $this->user2 = $this->getDataGenerator()->create_user([
             'firstname' => 'User2',
             'lastname' => 'User2',
             'username' => 'user2',
             'idnumber' => 'ID-number2',
-            'email' => 'nomail+user2@test.com'));
+            'email' => 'nomail+user2@test.com']);
 
-        $this->user3 = $this->getDataGenerator()->create_user(array(
+        $this->user3 = $this->getDataGenerator()->create_user([
             'firstname' => 'User3',
             'lastname' => 'User3',
             'username' => 'user3',
             'idnumber' => 'ID-number3',
-            'email' => 'nomail+user3@test.com'));
+            'email' => 'nomail+user3@test.com']);
 
     }
 
@@ -132,11 +132,11 @@ class cohortmembersync_test extends \advanced_testcase {
      */
     public function test_cohortmembersync_with_userid_cohortid() {
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->id, $this->user1->id);
-        $lines[] = array('add', $this->cohort1->id, $this->user2->id);
-        $lines[] = array('add', $this->cohort1->id, $this->user3->id);
-        $lines[] = array('add', $this->cohort2->id, $this->user1->id);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->id, $this->user1->id];
+        $lines[] = ['add', $this->cohort1->id, $this->user2->id];
+        $lines[] = ['add', $this->cohort1->id, $this->user3->id];
+        $lines[] = ['add', $this->cohort2->id, $this->user1->id];
 
         $filename = $this->set_csv_file($lines);
 
@@ -160,11 +160,11 @@ class cohortmembersync_test extends \advanced_testcase {
 
         set_config('useridentifier', 'idnumber', 'tool_cohortsync');
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->id, $this->user1->idnumber);
-        $lines[] = array('add', $this->cohort1->id, $this->user2->idnumber);
-        $lines[] = array('add', $this->cohort1->id, $this->user3->idnumber);
-        $lines[] = array('add', $this->cohort2->id, $this->user1->idnumber);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->id, $this->user1->idnumber];
+        $lines[] = ['add', $this->cohort1->id, $this->user2->idnumber];
+        $lines[] = ['add', $this->cohort1->id, $this->user3->idnumber];
+        $lines[] = ['add', $this->cohort2->id, $this->user1->idnumber];
 
         $filename = $this->set_csv_file($lines);
 
@@ -187,11 +187,11 @@ class cohortmembersync_test extends \advanced_testcase {
 
         set_config('useridentifier', 'username', 'tool_cohortsync');
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->id, $this->user1->username);
-        $lines[] = array('add', $this->cohort1->id, $this->user2->username);
-        $lines[] = array('add', $this->cohort1->id, $this->user3->username);
-        $lines[] = array('add', $this->cohort2->id, $this->user1->username);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->id, $this->user1->username];
+        $lines[] = ['add', $this->cohort1->id, $this->user2->username];
+        $lines[] = ['add', $this->cohort1->id, $this->user3->username];
+        $lines[] = ['add', $this->cohort2->id, $this->user1->username];
 
         $filename = $this->set_csv_file($lines);
 
@@ -214,11 +214,11 @@ class cohortmembersync_test extends \advanced_testcase {
 
         set_config('cohortidentifier', 'name', 'tool_cohortsync');
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->name, $this->user1->id);
-        $lines[] = array('add', $this->cohort1->name, $this->user2->id);
-        $lines[] = array('add', $this->cohort1->name, $this->user3->id);
-        $lines[] = array('add', $this->cohort2->name, $this->user1->id);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->name, $this->user1->id];
+        $lines[] = ['add', $this->cohort1->name, $this->user2->id];
+        $lines[] = ['add', $this->cohort1->name, $this->user3->id];
+        $lines[] = ['add', $this->cohort2->name, $this->user1->id];
 
         $filename = $this->set_csv_file($lines);
 
@@ -241,11 +241,11 @@ class cohortmembersync_test extends \advanced_testcase {
 
         set_config('cohortidentifier', 'idnumber', 'tool_cohortsync');
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->idnumber, $this->user1->id);
-        $lines[] = array('add', $this->cohort1->idnumber, $this->user2->id);
-        $lines[] = array('add', $this->cohort1->idnumber, $this->user3->id);
-        $lines[] = array('add', $this->cohort2->idnumber, $this->user1->id);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->idnumber, $this->user1->id];
+        $lines[] = ['add', $this->cohort1->idnumber, $this->user2->id];
+        $lines[] = ['add', $this->cohort1->idnumber, $this->user3->id];
+        $lines[] = ['add', $this->cohort2->idnumber, $this->user1->id];
 
         $filename = $this->set_csv_file($lines);
 
@@ -277,8 +277,8 @@ class cohortmembersync_test extends \advanced_testcase {
         // Check cohort members are not created.
         $this->assertEquals(1, $DB->count_records('cohort_members'));
 
-        $lines = array();
-        $lines[] = array('del', $this->cohort1->id, $this->user1->id);
+        $lines = [];
+        $lines[] = ['del', $this->cohort1->id, $this->user1->id];
 
         $filename = $this->set_csv_file($lines);
 
@@ -300,17 +300,17 @@ class cohortmembersync_test extends \advanced_testcase {
     public function test_cohortmembersync_with_wrong_parameters() {
         global $DB;
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->id, $this->user1->id);
-        $lines[] = array('add', $this->cohort1->id, $this->user2->id);
-        $lines[] = array('add', $this->cohort1->id, $this->user3->id);
-        $lines[] = array('add', $this->cohort2->id, $this->user1->id);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->id, $this->user1->id];
+        $lines[] = ['add', $this->cohort1->id, $this->user2->id];
+        $lines[] = ['add', $this->cohort1->id, $this->user3->id];
+        $lines[] = ['add', $this->cohort2->id, $this->user1->id];
 
         $filename = $this->set_csv_file($lines);
 
-        $params = array ('cohortidentifier' => 'badvalue',
+        $params = ['cohortidentifier' => 'badvalue',
             'useridentifier' => 'badvalue',
-            'flatfiledelimiter' => 'badvalue');
+            'flatfiledelimiter' => 'badvalue'];
 
         $cohortmembersync = new cohortmembersync($this->trace, $filename, $params);
         $cohortmembersync->update_cohortsmembers();
@@ -332,11 +332,11 @@ class cohortmembersync_test extends \advanced_testcase {
      */
     public function test_cohortmembersync_with_good_parameters() {
 
-        $lines = array();
-        $lines[] = array('add', $this->cohort1->idnumber, $this->user1->idnumber);
-        $lines[] = array('add', $this->cohort1->idnumber, $this->user2->idnumber);
-        $lines[] = array('add', $this->cohort1->idnumber, $this->user3->idnumber);
-        $lines[] = array('add', $this->cohort2->idnumber, $this->user1->idnumber);
+        $lines = [];
+        $lines[] = ['add', $this->cohort1->idnumber, $this->user1->idnumber];
+        $lines[] = ['add', $this->cohort1->idnumber, $this->user2->idnumber];
+        $lines[] = ['add', $this->cohort1->idnumber, $this->user3->idnumber];
+        $lines[] = ['add', $this->cohort2->idnumber, $this->user1->idnumber];
 
         $filename = $this->set_csv_file($lines);
 
@@ -345,9 +345,9 @@ class cohortmembersync_test extends \advanced_testcase {
 
         $filename = $this->set_csv_file($lines, ';');
 
-        $params = array ('cohortidentifier' => 'idnumber',
+        $params = ['cohortidentifier' => 'idnumber',
             'useridentifier' => 'idnumber',
-            'flatfiledelimiter' => 'semicolon');
+            'flatfiledelimiter' => 'semicolon'];
 
         $cohortmembersync = new cohortmembersync($this->trace, $filename, $params);
         $cohortmembersync->update_cohortsmembers();
@@ -368,12 +368,12 @@ class cohortmembersync_test extends \advanced_testcase {
     public function test_cohortmembersync_warning() {
         global $DB;
 
-        $lines = array();
-        $lines[] = array('badvalue', $this->cohort1->id, $this->user1->id);
-        $lines[] = array('add', 'badcohortid', $this->user2->id);
-        $lines[] = array('add', $this->cohort1->id, 'badcohortid');
-        $lines[] = array('add', '', $this->user1->id);
-        $lines[] = array('add', $this->cohort1->id, '');
+        $lines = [];
+        $lines[] = ['badvalue', $this->cohort1->id, $this->user1->id];
+        $lines[] = ['add', 'badcohortid', $this->user2->id];
+        $lines[] = ['add', $this->cohort1->id, 'badcohortid'];
+        $lines[] = ['add', '', $this->user1->id];
+        $lines[] = ['add', $this->cohort1->id, ''];
 
         $filename = $this->set_csv_file($lines);
 

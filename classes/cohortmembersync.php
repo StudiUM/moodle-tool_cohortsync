@@ -43,19 +43,19 @@ require_once($CFG->dirroot.'/cohort/lib.php');
 class cohortmembersync {
 
     /** @var array errors when prcessing file or updating cohorts */
-    protected $errors = array();
+    protected $errors = [];
 
     /** @var string the file name of the file */
     protected $filename = '';
 
     /** @var array updating cohorts options */
-    protected $params = array();
+    protected $params = [];
 
     /** @var array warnings if cohort or user are not found */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /** @var array informations about members added or deleted */
-    protected $infos = array('usersadded' => array(), 'usersdeleted' => array());
+    protected $infos = ['usersadded' => [], 'usersdeleted' => []];
 
     /** @var progress_trace trace */
     protected $trace = null;
@@ -67,7 +67,7 @@ class cohortmembersync {
      * @param string $filepath the file path of the cohorts members file
      * @param array $params Options for processing file
      */
-    public function __construct($trace, $filepath, $params = array()) {
+    public function __construct($trace, $filepath, $params = []) {
 
         $this->trace = $trace;
         if (!empty($filepath)) {
@@ -90,12 +90,12 @@ class cohortmembersync {
             $this->errors[] = "Unknown delimiter : " . $this->params['flatfiledelimiter'];
         }
         // Validate useridentifier.
-        if (!in_array($this->params['useridentifier'], array('id',  'idnumber', 'username'))) {
+        if (!in_array($this->params['useridentifier'], ['id',  'idnumber', 'username'])) {
             $this->errors[] = "Unknown user identifier : " . $this->params['useridentifier'];
         }
 
         // Validate cohortidentifier.
-        if (!in_array($this->params['cohortidentifier'], array('name', 'idnumber', 'id'))) {
+        if (!in_array($this->params['cohortidentifier'], ['name', 'idnumber', 'id'])) {
             $this->errors[] = "Unknown cohort identifier : " . $this->params['cohortidentifier'];
         }
     }
@@ -137,12 +137,12 @@ class cohortmembersync {
      * @return array params list
      */
     protected function get_defaults_params() {
-        return array(
+        return [
             'useridentifier' => get_config('tool_cohortsync', 'useridentifier'),
             'cohortidentifier' => get_config('tool_cohortsync', 'cohortidentifier'),
             'flatfiledelimiter' => get_config('tool_cohortsync', 'flatfiledelimiter'),
-            'flatfileencoding' => get_config('tool_cohortsync', 'flatfileencoding')
-        );
+            'flatfileencoding' => get_config('tool_cohortsync', 'flatfileencoding'),
+        ];
     }
 
     /**
@@ -174,15 +174,15 @@ class cohortmembersync {
             return;
         }
 
-        $cachedusers = array();
-        $cachedcohorts = array();
+        $cachedusers = [];
+        $cachedcohorts = [];
 
         // We may need more memory here.
         \core_php_time_limit::raise();
         \raise_memory_limit(MEMORY_HUGE);
 
         $this->trace->output("Processing flat file cohort members");
-        $data = array();
+        $data = [];
 
         $content = file_get_contents($this->filename);
         $delimiters = \csv_import_reader::get_delimiter_list();
@@ -238,10 +238,10 @@ class cohortmembersync {
 
                         $select = $DB->sql_equal($this->params['useridentifier'], ':useridentifier', false)
                             . ' AND deleted = :deleted';
-                        $params = array(
+                        $params = [
                             'useridentifier' => $fields[2],
-                            'deleted' => 0
-                        );
+                            'deleted' => 0,
+                        ];
                         $user = $DB->get_record_select('user', $select, $params);
 
                         if ($user) {
@@ -265,9 +265,9 @@ class cohortmembersync {
                         $cachedcohorts[$fields[1]] = 0;
 
                         $select = $DB->sql_equal($this->params['cohortidentifier'], ':cohortidentifier', false);
-                        $params = array(
-                            'cohortidentifier' => $fields[1]
-                        );
+                        $params = [
+                            'cohortidentifier' => $fields[1],
+                        ];
                         $cohort = $DB->get_record_select('cohort', $select, $params);
 
                         if ($cohort) {

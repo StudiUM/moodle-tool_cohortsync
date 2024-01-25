@@ -34,22 +34,22 @@ require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortmembersync.ph
 
 // Now get cli options.
 list($options, $unrecognized) = cli_get_params(
-        array(
+        [
             'help' => false,
             'filepath' => false,
             'flatfiledelimiter' => false,
             'flatfileencoding' => false,
             'cohortidentifier' => false,
             'useridentifier' => false,
-            'verbose' => false),
-        array(
+            'verbose' => false],
+        [
             'h' => 'help',
             'f' => 'filepath',
             'd' => 'flatfiledelimiter',
             'e' => 'flatfileencoding',
             'c' => 'cohortidentifier',
             'u' => 'useridentifier',
-            'v' => 'verbose')
+            'v' => 'verbose']
 );
 
 if ($options['help']) {
@@ -83,15 +83,15 @@ if ($options['help']) {
     die;
 }
 
-$params = array(
+$params = [
     'help',
     'verbose',
     'filepath',
     'flatfiledelimiter',
     'flatfileencoding',
     'cohortidentifier',
-    'useridentifier'
-);
+    'useridentifier',
+];
 
 foreach ($params as $param) {
     if ($options[$param] === false) {

@@ -44,13 +44,13 @@ use Exception;
 class cohortsync {
 
     /** @var array errors when prcessing csv file or updating cohorts */
-    protected $errors = array();
+    protected $errors = [];
 
     /** @var string the file name of the csv file */
     protected $filename = '';
 
     /** @var array updating cohorts options */
-    protected $params = array();
+    protected $params = [];
 
     /** @var array cached list of available contexts */
     protected $contextlist = null;
@@ -59,10 +59,10 @@ class cohortsync {
     protected $defaultcontext = null;
 
     /** @var array warnings if cohort or user are not found */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /** @var array list of cohort data */
-    protected $cohorts = array();
+    protected $cohorts = [];
 
     /** @var progress_trace trace */
     protected $trace = null;
@@ -74,7 +74,7 @@ class cohortsync {
      * @param string $filepath the file path of the csv cohorts file
      * @param array $params Options for processing csv file
      */
-    public function __construct($trace, $filepath, $params = array()) {
+    public function __construct($trace, $filepath, $params = []) {
 
         $this->trace = $trace;
         if (!empty($filepath)) {
@@ -133,11 +133,11 @@ class cohortsync {
      * @return array params list
      */
     protected function get_defaults_params() {
-        return array(
+        return [
             'defaultcontext' => get_config('tool_cohortsync', 'defaultcontext'),
             'csvdelimiter' => get_config('tool_cohortsync', 'csvdelimiter'),
-            'csvencoding' => get_config('tool_cohortsync', 'encoding')
-        );
+            'csvencoding' => get_config('tool_cohortsync', 'encoding'),
+        ];
     }
 
     /**
@@ -166,7 +166,7 @@ class cohortsync {
     protected function get_context_options() {
 
         if ($this->contextlist === null) {
-            $this->contextlist = array();
+            $this->contextlist = [];
             $displaylist = \core_course_category::make_categories_list('moodle/cohort:manage');
             // We need to index the options array by context id instead of category id and add option for system context.
             $syscontext = \context_system::instance();
@@ -195,7 +195,7 @@ class cohortsync {
             return;
         }
 
-        $cohorts = array();
+        $cohorts = [];
 
         $uploadid = \csv_import_reader::get_new_iid('cohortsync');
         $cir = new \csv_import_reader($uploadid, 'cohortsync');
@@ -208,11 +208,11 @@ class cohortsync {
         $columns = $cir->get_columns();
 
         // Check that columns include 'name' and warn about extra columns.
-        $allowedcolumns = array('contextid', 'name', 'idnumber', 'description', 'descriptionformat', 'visible');
-        $additionalcolumns = array('context', 'category', 'category_id', 'category_idnumber', 'category_path');
-        $displaycolumns = array();
-        $extracolumns = array();
-        $columnsmapping = array();
+        $allowedcolumns = ['contextid', 'name', 'idnumber', 'description', 'descriptionformat', 'visible'];
+        $additionalcolumns = ['context', 'category', 'category_id', 'category_idnumber', 'category_path'];
+        $displaycolumns = [];
+        $extracolumns = [];
+        $columnsmapping = [];
         foreach ($columns as $i => $columnname) {
             $columnnamelower = preg_replace('/ /', '', \core_text::strtolower($columnname));
             $columnsmapping[$i] = null;
@@ -241,11 +241,11 @@ class cohortsync {
         // Parse data rows.
         $cir->init();
         $rownum = 0;
-        $idnumbers = array();
+        $idnumbers = [];
         while ($row = $cir->next()) {
             $rownum++;
-            $cohorts[$rownum] = array();
-            $hash = array();
+            $cohorts[$rownum] = [];
+            $hash = [];
             foreach ($row as $i => $value) {
                 if ($columnsmapping[$i]) {
                     $hash[$columnsmapping[$i]] = $value;
@@ -257,7 +257,7 @@ class cohortsync {
             $this->warnings = array_merge($this->warnings, $warnings);
 
             if (!empty($hash['idnumber'])) {
-                if (isset($idnumbers[$hash['idnumber']]) || $DB->record_exists('cohort', array('idnumber' => $hash['idnumber']))) {
+                if (isset($idnumbers[$hash['idnumber']]) || $DB->record_exists('cohort', ['idnumber' => $hash['idnumber']])) {
                     $this->errors[] = new \lang_string('duplicateidnumber', 'cohort');
                 }
                 $idnumbers[$hash['idnumber']] = true;
@@ -321,7 +321,7 @@ class cohortsync {
     protected function resolve_context(&$hash) {
         global $DB;
 
-        $warnings = array();
+        $warnings = [];
 
         if (!empty($hash['contextid'])) {
             // Contextid was specified, verify we can post there.
@@ -388,7 +388,7 @@ class cohortsync {
         if (empty($this->categoriescache[$field][$value])) {
             $record = $DB->get_record_sql("SELECT c.id, ctx.id contextid
                 FROM {context} ctx JOIN {course_categories} c ON ctx.contextlevel = ? AND ctx.instanceid = c.id
-                WHERE c.$field = ?", array(CONTEXT_COURSECAT, $value));
+                WHERE c.$field = ?", [CONTEXT_COURSECAT, $value]);
             if ($record && ($contextoptions = $this->get_context_options()) && isset($contextoptions[$record->contextid])) {
                 $contextid = $record->contextid;
             } else {

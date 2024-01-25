@@ -68,7 +68,7 @@ class cohortsync_test extends \advanced_testcase {
     public function setUp(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
-        $this->commonheader = array('name', 'idnumber', 'description', 'visible');
+        $this->commonheader = ['name', 'idnumber', 'description', 'visible'];
         $this->trace = new \null_progress_trace();
 
     }
@@ -79,24 +79,24 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_category_as_name() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, 'CAT1');
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, 'CAT2');
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, 'CAT2');
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, 'CAT1'];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, 'CAT2'];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, 'CAT2'];
 
-        $extraheader = array('category');
+        $extraheader = ['category'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
         $cohortsync->update_cohorts();
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -117,15 +117,15 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_category_as_id() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->id);
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->id);
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->id);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, $cat1->id];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, $cat2->id];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, $cat2->id];
 
-        $extraheader = array('category');
+        $extraheader = ['category'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -133,9 +133,9 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -155,15 +155,15 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_category_as_idnumber() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1', 'idnumber' => 'IDNBCAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2', 'idnumber' => 'IDNBCAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1', 'idnumber' => 'IDNBCAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2', 'idnumber' => 'IDNBCAT2']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->idnumber);
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->idnumber);
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->idnumber);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, $cat1->idnumber];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, $cat2->idnumber];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, $cat2->idnumber];
 
-        $extraheader = array('category');
+        $extraheader = ['category'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -171,9 +171,9 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -193,18 +193,18 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_contextid() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2']);
 
         $contextcat1 = \context_coursecat::instance($cat1->id);
         $contextcat2 = \context_coursecat::instance($cat2->id);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $contextcat1->id);
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $contextcat2->id);
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $contextcat2->id);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, $contextcat1->id];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, $contextcat2->id];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, $contextcat2->id];
 
-        $extraheader = array('contextid');
+        $extraheader = ['contextid'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -212,9 +212,9 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -231,15 +231,15 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_category_id() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->id);
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->id);
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->id);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, $cat1->id];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, $cat2->id];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, $cat2->id];
 
-        $extraheader = array('category_id');
+        $extraheader = ['category_id'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -247,9 +247,9 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -269,15 +269,15 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_category_idnumber() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1', 'idnumber' => 'IDNBCAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('name' => 'CAT2', 'idnumber' => 'IDNBCAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1', 'idnumber' => 'IDNBCAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['name' => 'CAT2', 'idnumber' => 'IDNBCAT2']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->idnumber);
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, $cat2->idnumber);
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, $cat2->idnumber);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, $cat1->idnumber];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, $cat2->idnumber];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, $cat2->idnumber];
 
-        $extraheader = array('category_idnumber');
+        $extraheader = ['category_idnumber'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -285,9 +285,9 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -307,15 +307,15 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_column_category_path() {
         global $DB;
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
-        $cat2 = $this->getDataGenerator()->create_category(array('parent' => $cat1->id, 'name' => 'CAT2'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
+        $cat2 = $this->getDataGenerator()->create_category(['parent' => $cat1->id, 'name' => 'CAT2']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, 'CAT1');
-        $cohorts[] = array('cohort name 2', 'cohortid2', 'first description', 1, 'CAT1 / CAT2');
-        $cohorts[] = array('cohort name 3', 'cohortid3', 'first description', 1, 'CAT1 / CAT2');
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, 'CAT1'];
+        $cohorts[] = ['cohort name 2', 'cohortid2', 'first description', 1, 'CAT1 / CAT2'];
+        $cohorts[] = ['cohort name 3', 'cohortid3', 'first description', 1, 'CAT1 / CAT2'];
 
-        $extraheader = array('category_path');
+        $extraheader = ['category_path'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -323,9 +323,9 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
-        $cohort2 = $DB->get_record('cohort', array('idnumber' => 'cohortid2'));
-        $cohort3 = $DB->get_record('cohort', array('idnumber' => 'cohortid3'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
+        $cohort2 = $DB->get_record('cohort', ['idnumber' => 'cohortid2']);
+        $cohort3 = $DB->get_record('cohort', ['idnumber' => 'cohortid3']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $this->assertEquals('cohortid2', $cohort2->idnumber);
@@ -345,21 +345,21 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_defaultcontext() {
         global $DB;
 
-        $defaultcat = $this->getDataGenerator()->create_category(array('name' => 'DEFAULTCAT'));
+        $defaultcat = $this->getDataGenerator()->create_category(['name' => 'DEFAULTCAT']);
         $contextdefault = \context_coursecat::instance($defaultcat->id);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1];
 
-        $extraheader = array();
+        $extraheader = [];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
-        $cohortsync = new cohortsync($this->trace, $csvfilename, array('context' => $defaultcat->id));
+        $cohortsync = new cohortsync($this->trace, $csvfilename, ['context' => $defaultcat->id]);
         $cohortsync->update_cohorts();
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
 
@@ -373,10 +373,10 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_no_defaultcontext() {
         global $DB;
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1];
 
-        $extraheader = array();
+        $extraheader = [];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -384,7 +384,7 @@ class cohortsync_test extends \advanced_testcase {
 
         $this->assertEmpty($cohortsync->get_errors());
 
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
 
@@ -398,13 +398,13 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_wrong_defaultcontext() {
         global $DB;
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1];
 
-        $extraheader = array();
+        $extraheader = [];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
-        $cohortsync = new cohortsync($this->trace, $csvfilename, array('context' => 100));
+        $cohortsync = new cohortsync($this->trace, $csvfilename, ['context' => 100]);
 
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
@@ -445,16 +445,16 @@ class cohortsync_test extends \advanced_testcase {
      */
     public function test_cohortsync_with_no_columnnames() {
 
-        $cat1 = $this->getDataGenerator()->create_category(array('name' => 'CAT1'));
+        $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, $cat1->id);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, $cat1->id];
 
-        $extracolums = array('category_path');
+        $extracolums = ['category_path'];
         $columnname = false;
 
-        $header = array();
-        $extraheader = array();
+        $header = [];
+        $extraheader = [];
         $csvfilename = $this->set_csv_file($header, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -471,10 +471,10 @@ class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_warnings_when_notfoundcategory() {
         global $DB;
 
-        $cohorts = array();
-        $cohorts[] = array('cohort name 1', 'cohortid1', 'first description', 1, 100);
+        $cohorts = [];
+        $cohorts[] = ['cohort name 1', 'cohortid1', 'first description', 1, 100];
 
-        $extraheader = array('category_id');
+        $extraheader = ['category_id'];
         $csvfilename = $this->set_csv_file($this->commonheader, $extraheader, $cohorts);
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -488,7 +488,7 @@ class cohortsync_test extends \advanced_testcase {
 
         // Test no errors found when creating cohorts.
         $this->assertEmpty($cohortsync->get_errors());
-        $cohort1 = $DB->get_record('cohort', array('idnumber' => 'cohortid1'));
+        $cohort1 = $DB->get_record('cohort', ['idnumber' => 'cohortid1']);
 
         $this->assertEquals('cohortid1', $cohort1->idnumber);
         $contextsystem = \context_system::instance();
