@@ -23,11 +23,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['cohortscreated'] = '"{$a}" cohorte(s) ont été crée';
-$string['cohortsyncheader'] = 'Paramètrage de la synchronisation des cohortes';
 $string['cohortidentifier'] = 'Identifiant de la cohorte';
 $string['cohortidentifierdesc'] = 'Ce paramètre est utilisé pour identifier la cohorte.';
 $string['cohortmembersyncheader'] = 'Paramètrage de la synchronisation des membres de cohortes';
+$string['cohortscreated'] = '"{$a}" cohorte(s) ont été crée';
+$string['cohortsyncheader'] = 'Paramètrage de la synchronisation des cohortes';
 $string['csvdelimiter'] = 'Délimiteur CSV';
 $string['encoding'] = 'Encodage';
 $string['errordefaultcontext'] = "Le context de défaut n'existe pas'";

@@ -23,11 +23,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['cohortscreated'] = '"{$a}" cohort(s) created';
-$string['cohortsyncheader'] = 'Cohort configuration';
 $string['cohortidentifier'] = 'Cohort identifier';
 $string['cohortidentifierdesc'] = 'This parameter is used to identify the cohort in which to insert the member.';
 $string['cohortmembersyncheader'] = 'Cohort member configuration';
+$string['cohortscreated'] = '"{$a}" cohort(s) created';
+$string['cohortsyncheader'] = 'Cohort configuration';
 $string['csvdelimiter'] = 'CSV delimiter';
 $string['encoding'] = 'Encoding';
 $string['errordefaultcontext'] = 'Default context does not exist';

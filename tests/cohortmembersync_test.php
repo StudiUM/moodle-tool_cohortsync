@@ -42,7 +42,7 @@ require_once($CFG->libdir . '/weblib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers \tool_cohortsync\cohortmembersync
  */
-class cohortmembersync_test extends \advanced_testcase {
+final class cohortmembersync_test extends \advanced_testcase {
 
     /** @var \progress_trace trace */
     protected $trace = null;
@@ -124,13 +124,14 @@ class cohortmembersync_test extends \advanced_testcase {
             'username' => 'user3',
             'idnumber' => 'ID-number3',
             'email' => 'nomail+user3@test.com']);
+        parent::setUp();
 
     }
 
     /**
      * Tests cohort members synchronisation with user id and cohort id.
      */
-    public function test_cohortmembersync_with_userid_cohortid() {
+    public function test_cohortmembersync_with_userid_cohortid(): void {
 
         $lines = [];
         $lines[] = ['add', $this->cohort1->id, $this->user1->id];
@@ -156,7 +157,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with user idnumber and cohort id.
      */
-    public function test_cohortmembersync_with_useridnumber_cohortid() {
+    public function test_cohortmembersync_with_useridnumber_cohortid(): void {
 
         set_config('useridentifier', 'idnumber', 'tool_cohortsync');
 
@@ -183,7 +184,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with user name and cohort id.
      */
-    public function test_cohortmembersync_with_username_cohortid() {
+    public function test_cohortmembersync_with_username_cohortid(): void {
 
         set_config('useridentifier', 'username', 'tool_cohortsync');
 
@@ -210,7 +211,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with user id and cohort name.
      */
-    public function test_cohortmembersync_with_userid_cohortname() {
+    public function test_cohortmembersync_with_userid_cohortname(): void {
 
         set_config('cohortidentifier', 'name', 'tool_cohortsync');
 
@@ -237,7 +238,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with user id and cohort idnumber.
      */
-    public function test_cohortmembersync_with_userid_cohortidnumner() {
+    public function test_cohortmembersync_with_userid_cohortidnumner(): void {
 
         set_config('cohortidentifier', 'idnumber', 'tool_cohortsync');
 
@@ -264,7 +265,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation remove user.
      */
-    public function test_cohortmembersync_delete() {
+    public function test_cohortmembersync_delete(): void {
         global $DB;
 
         set_config('cohortidentifier', 'id', 'tool_cohortsync');
@@ -297,7 +298,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with wrong parameter values.
      */
-    public function test_cohortmembersync_with_wrong_parameters() {
+    public function test_cohortmembersync_with_wrong_parameters(): void {
         global $DB;
 
         $lines = [];
@@ -330,7 +331,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with good parameter values.
      */
-    public function test_cohortmembersync_with_good_parameters() {
+    public function test_cohortmembersync_with_good_parameters(): void {
 
         $lines = [];
         $lines[] = ['add', $this->cohort1->idnumber, $this->user1->idnumber];
@@ -365,7 +366,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with user id and cohort idnumber.
      */
-    public function test_cohortmembersync_warning() {
+    public function test_cohortmembersync_warning(): void {
         global $DB;
 
         $lines = [];
@@ -398,7 +399,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with empty file.
      */
-    public function test_cohortmembersync_with_emptyfile() {
+    public function test_cohortmembersync_with_emptyfile(): void {
 
         $csvfilename = $this->set_csv_file();
         $cohortmembersync = new cohortmembersync($this->trace, $csvfilename);
@@ -411,7 +412,7 @@ class cohortmembersync_test extends \advanced_testcase {
     /**
      * Tests cohort members synchronisation with no found file.
      */
-    public function test_cohortmembersync_with_notfoundfile() {
+    public function test_cohortmembersync_with_notfoundfile(): void {
         global $CFG;
         $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohortmembers_notfound';
 
@@ -427,8 +428,9 @@ class cohortmembersync_test extends \advanced_testcase {
      *
      * @param bool|array $lines false or array of lines to write in file
      * @param string $separator  separator if columns
+     * @return string $filepath file path
      */
-    public function set_csv_file($lines = false, $separator = ',') {
+    public function set_csv_file($lines = false, $separator = ','): string {
 
         // Creating the file.
         $filename = 'cohortmembersync';

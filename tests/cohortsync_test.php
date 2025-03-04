@@ -42,7 +42,7 @@ require_once($CFG->libdir . '/weblib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers \tool_cohortsync\cohortsync
  */
-class cohortsync_test extends \advanced_testcase {
+final class cohortsync_test extends \advanced_testcase {
 
     /** @var \progress_trace trace */
     protected $trace = null;
@@ -58,7 +58,7 @@ class cohortsync_test extends \advanced_testcase {
         set_config('csvdelimiter', 'comma', 'tool_cohortsync');
         set_config('csvencoding', 'UTF-8', 'tool_cohortsync');
         set_config('defaultcontext', 'System', 'tool_cohortsync');
-
+        parent::setUpBeforeClass();
     }
 
     /**
@@ -70,13 +70,13 @@ class cohortsync_test extends \advanced_testcase {
         $this->setAdminUser();
         $this->commonheader = ['name', 'idnumber', 'description', 'visible'];
         $this->trace = new \null_progress_trace();
-
+        parent::setUp();
     }
 
     /**
      * Tests cohort synchronisation with column category containing category name.
      */
-    public function test_cohortsync_with_column_category_as_name() {
+    public function test_cohortsync_with_column_category_as_name(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
@@ -114,7 +114,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with column category containing category id.
      */
-    public function test_cohortsync_with_column_category_as_id() {
+    public function test_cohortsync_with_column_category_as_id(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
@@ -152,7 +152,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with column category containing category idnumber.
      */
-    public function test_cohortsync_with_column_category_as_idnumber() {
+    public function test_cohortsync_with_column_category_as_idnumber(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1', 'idnumber' => 'IDNBCAT1']);
@@ -190,7 +190,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with column category containing category id.
      */
-    public function test_cohortsync_with_column_contextid() {
+    public function test_cohortsync_with_column_contextid(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
@@ -228,7 +228,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with column category_id containing category id.
      */
-    public function test_cohortsync_with_column_category_id() {
+    public function test_cohortsync_with_column_category_id(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
@@ -266,7 +266,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with column category_idnumber containing the category idnumber.
      */
-    public function test_cohortsync_with_column_category_idnumber() {
+    public function test_cohortsync_with_column_category_idnumber(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1', 'idnumber' => 'IDNBCAT1']);
@@ -304,7 +304,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with column category_path.
      */
-    public function test_cohortsync_with_column_category_path() {
+    public function test_cohortsync_with_column_category_path(): void {
         global $DB;
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
@@ -342,7 +342,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with default context given.
      */
-    public function test_cohortsync_with_defaultcontext() {
+    public function test_cohortsync_with_defaultcontext(): void {
         global $DB;
 
         $defaultcat = $this->getDataGenerator()->create_category(['name' => 'DEFAULTCAT']);
@@ -370,7 +370,7 @@ class cohortsync_test extends \advanced_testcase {
      * Tests cohort synchronisation with no default context given.
      * Context system will be used.
      */
-    public function test_cohortsync_no_defaultcontext() {
+    public function test_cohortsync_no_defaultcontext(): void {
         global $DB;
 
         $cohorts = [];
@@ -395,7 +395,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with wrong default context given.
      */
-    public function test_cohortsync_wrong_defaultcontext() {
+    public function test_cohortsync_wrong_defaultcontext(): void {
         global $DB;
 
         $cohorts = [];
@@ -414,7 +414,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with empty file.
      */
-    public function test_cohortsync_with_emptyfile() {
+    public function test_cohortsync_with_emptyfile(): void {
 
         $csvfilename = $this->set_csv_file();
         $cohortsync = new cohortsync($this->trace, $csvfilename);
@@ -428,7 +428,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with not found csv file.
      */
-    public function test_cohortsync_with_notfoundfile() {
+    public function test_cohortsync_with_notfoundfile(): void {
         global $CFG;
 
         $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfound.csv';
@@ -443,7 +443,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with no column names in the csv file.
      */
-    public function test_cohortsync_with_no_columnnames() {
+    public function test_cohortsync_with_no_columnnames(): void {
 
         $cat1 = $this->getDataGenerator()->create_category(['name' => 'CAT1']);
 
@@ -468,7 +468,7 @@ class cohortsync_test extends \advanced_testcase {
     /**
      * Tests cohort synchronisation with not found category as a context.
      */
-    public function test_cohortsync_warnings_when_notfoundcategory() {
+    public function test_cohortsync_warnings_when_notfoundcategory(): void {
         global $DB;
 
         $cohorts = [];
@@ -503,7 +503,7 @@ class cohortsync_test extends \advanced_testcase {
      * @param bool|array $cohorts false or array of cohort ines to put in the file
      * @param string $csvseparator separator used.
      */
-    public function set_csv_file($header = false, $extraheader = false, $cohorts = false, $csvseparator = ',') {
+    public function set_csv_file($header = false, $extraheader = false, $cohorts = false, $csvseparator = ','): string {
 
         // Creating the CSV file.
         $filename = 'cohortsync.csv';
