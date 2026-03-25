@@ -33,8 +33,8 @@ require_once($CFG->libdir . '/weblib.php');
 require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortmembersync.php');
 
 // Now get cli options.
-list($options, $unrecognized) = cli_get_params(
-        [
+[$options, $unrecognized] = cli_get_params(
+    [
             'help' => false,
             'filepath' => false,
             'flatfiledelimiter' => false,
@@ -42,7 +42,7 @@ list($options, $unrecognized) = cli_get_params(
             'cohortidentifier' => false,
             'useridentifier' => false,
             'verbose' => false],
-        [
+    [
             'h' => 'help',
             'f' => 'filepath',
             'd' => 'flatfiledelimiter',

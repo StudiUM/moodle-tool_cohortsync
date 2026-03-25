@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
-require_once($CFG->dirroot.'/cohort/lib.php');
+require_once($CFG->dirroot . '/cohort/lib.php');
 
 use Exception;
 
@@ -42,7 +42,6 @@ use Exception;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortsync {
-
     /** @var array errors when prcessing csv file or updating cohorts */
     protected $errors = [];
 
@@ -60,6 +59,9 @@ class cohortsync {
 
     /** @var array warnings if cohort or user are not found */
     protected $warnings = [];
+
+    /** @var array cache for category lookup by id or idnumber */
+    protected $categoriescache = [];
 
     /** @var array list of cohort data */
     protected $cohorts = [];
@@ -285,15 +287,20 @@ class cohortsync {
     protected function clean_cohort_data(&$hash) {
         foreach ($hash as $key => $value) {
             switch ($key) {
-                case 'contextid': $hash[$key] = clean_param($value, PARAM_INT);
+                case 'contextid':
+                    $hash[$key] = clean_param($value, PARAM_INT);
                     break;
-                case 'name': $hash[$key] = \core_text::substr(clean_param($value, PARAM_TEXT), 0, 254);
+                case 'name':
+                    $hash[$key] = \core_text::substr(clean_param($value, PARAM_TEXT), 0, 254);
                     break;
-                case 'idnumber': $hash[$key] = \core_text::substr(clean_param($value, PARAM_RAW), 0, 254);
+                case 'idnumber':
+                    $hash[$key] = \core_text::substr(clean_param($value, PARAM_RAW), 0, 254);
                     break;
-                case 'description': $hash[$key] = clean_param($value, PARAM_RAW);
+                case 'description':
+                    $hash[$key] = clean_param($value, PARAM_RAW);
                     break;
-                case 'descriptionformat': $hash[$key] = clean_param($value, PARAM_INT);
+                case 'descriptionformat':
+                    $hash[$key] = clean_param($value, PARAM_INT);
                     break;
                 case 'visible':
                     $tempstr = trim(\core_text::strtolower($value));
@@ -334,9 +341,11 @@ class cohortsync {
         }
 
         if (!empty($hash['context'])) {
-            $systemcontext = context_system::instance();
-            if ((\core_text::strtolower(trim($hash['context'])) === \core_text::strtolower($systemcontext->get_context_name())) ||
-                    ('' . $hash['context'] === '' . $systemcontext->id)) {
+            $systemcontext = \context_system::instance();
+            if (
+                (\core_text::strtolower(trim($hash['context'])) === \core_text::strtolower($systemcontext->get_context_name())) ||
+                ('' . $hash['context'] === '' . $systemcontext->id)
+            ) {
                 // User meant system context.
                 $hash['contextid'] = $systemcontext->id;
                 $contextoptions = $this->get_context_options();
@@ -432,8 +441,7 @@ class cohortsync {
             $infomessage = new \lang_string('info');
             $this->trace->output($infomessage);
             $messageinfocohort = new \lang_string('cohortscreated', 'tool_cohortsync', count($this->cohorts));
-            $this->trace->output($messageinfocohort );
+            $this->trace->output($messageinfocohort);
         }
     }
-
 }

@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/weblib.php');
  * @covers \tool_cohortsync\cohortmembersync
  */
 final class cohortmembersync_test extends \advanced_testcase {
-
     /** @var \progress_trace trace */
     protected $trace = null;
 
@@ -125,7 +124,6 @@ final class cohortmembersync_test extends \advanced_testcase {
             'idnumber' => 'ID-number3',
             'email' => 'nomail+user3@test.com']);
         parent::setUp();
-
     }
 
     /**
@@ -151,7 +149,6 @@ final class cohortmembersync_test extends \advanced_testcase {
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
         $this->assertTrue(cohort_is_member($this->cohort2->id, $this->user1->id));
-
     }
 
     /**
@@ -292,7 +289,6 @@ final class cohortmembersync_test extends \advanced_testcase {
 
         // Check cohort members is deleted.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
-
     }
 
     /**
@@ -319,13 +315,12 @@ final class cohortmembersync_test extends \advanced_testcase {
         // Check there is error.
         $errors = $cohortmembersync->get_errors();
         $this->assertEquals(3, count($errors));
-        $this->assertStringContainsString('Unknown delimiter', $errors[0] );
-        $this->assertStringContainsString('Unknown user identifier', $errors[1] );
-        $this->assertStringContainsString('Unknown cohort identifier', $errors[2] );
+        $this->assertStringContainsString('Unknown delimiter', $errors[0]);
+        $this->assertStringContainsString('Unknown user identifier', $errors[1]);
+        $this->assertStringContainsString('Unknown cohort identifier', $errors[2]);
 
         // Check cohort members are not created.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
-
     }
 
     /**
@@ -360,7 +355,6 @@ final class cohortmembersync_test extends \advanced_testcase {
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user2->id));
         $this->assertTrue(cohort_is_member($this->cohort1->id, $this->user3->id));
         $this->assertTrue(cohort_is_member($this->cohort2->id, $this->user1->id));
-
     }
 
     /**
@@ -385,15 +379,14 @@ final class cohortmembersync_test extends \advanced_testcase {
 
         $warnings = $cohortmembersync->get_warnings();
         $this->assertEquals(5, count($warnings));
-        $this->assertStringContainsString('Unknown operation', $warnings[0] );
-        $this->assertStringContainsString('Cohort not found', $warnings[1] );
-        $this->assertStringContainsString('User not found or deleted', $warnings[2] );
-        $this->assertStringContainsString('Empty cohort identifier', $warnings[3] );
-        $this->assertStringContainsString('Empty user identifier', $warnings[4] );
+        $this->assertStringContainsString('Unknown operation', $warnings[0]);
+        $this->assertStringContainsString('Cohort not found', $warnings[1]);
+        $this->assertStringContainsString('User not found or deleted', $warnings[2]);
+        $this->assertStringContainsString('Empty cohort identifier', $warnings[3]);
+        $this->assertStringContainsString('Empty user identifier', $warnings[4]);
 
         // Check cohort members are not created.
         $this->assertEquals(0, $DB->count_records('cohort_members'));
-
     }
 
     /**
@@ -414,7 +407,7 @@ final class cohortmembersync_test extends \advanced_testcase {
      */
     public function test_cohortmembersync_with_notfoundfile(): void {
         global $CFG;
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohortmembers_notfound';
+        $csvfilename = $CFG->dirroot . '/admin/tool/cohortsync/tests/fixtures/cohortmembers_notfound';
 
         $cohortmembersync = new cohortmembersync($this->trace, $csvfilename);
 
