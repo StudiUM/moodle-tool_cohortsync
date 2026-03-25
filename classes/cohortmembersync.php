@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
-require_once($CFG->dirroot.'/cohort/lib.php');
+require_once($CFG->dirroot . '/cohort/lib.php');
 
 
 /**
@@ -41,7 +41,6 @@ require_once($CFG->dirroot.'/cohort/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortmembersync {
-
     /** @var array errors when prcessing file or updating cohorts */
     protected $errors = [];
 
@@ -90,7 +89,7 @@ class cohortmembersync {
             $this->errors[] = "Unknown delimiter : " . $this->params['flatfiledelimiter'];
         }
         // Validate useridentifier.
-        if (!in_array($this->params['useridentifier'], ['id',  'idnumber', 'username'])) {
+        if (!in_array($this->params['useridentifier'], ['id', 'idnumber', 'username'])) {
             $this->errors[] = "Unknown user identifier : " . $this->params['useridentifier'];
         }
 
@@ -205,7 +204,7 @@ class cohortmembersync {
                 $fields = explode($separator, $fields);
 
                 // If a line is incorrectly formatted ie does not have 2 comma separated fields then ignore it.
-                if (count($fields) !== 3 ) {
+                if (count($fields) !== 3) {
                     $this->warnings[] = "Line incorrectly formatted - ignoring $line";
                     continue;
                 }
@@ -343,5 +342,4 @@ class cohortmembersync {
         }
         $this->trace->finished();
     }
-
 }

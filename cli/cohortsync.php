@@ -33,15 +33,15 @@ require_once($CFG->libdir . '/weblib.php');
 require_once($CFG->dirroot . '/admin/tool/cohortsync/classes/cohortsync.php');
 
 // Now get cli options.
-list($options, $unrecognized) = cli_get_params(
-        [
+[$options, $unrecognized] = cli_get_params(
+    [
             'help' => false,
             'filepath' => false,
             'csvdelimiter' => false,
             'csvencoding' => false,
             'context' => false,
             'verbose' => false],
-        [
+    [
             'h' => 'help',
             'f' => 'filepath',
             'd' => 'csvdelimiter',
@@ -102,7 +102,7 @@ $filename = (isset($options['filepath']) && !empty($options['filepath'])) ? $opt
 // Initialise the timer.
 $starttime = microtime();
 
-$cohortsync = new cohortsync($trace, $filename,  $options);
+$cohortsync = new cohortsync($trace, $filename, $options);
 
 if (!$cohortsync->get_errors()) {
     $cohortsync->update_cohorts();

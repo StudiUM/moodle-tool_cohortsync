@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/weblib.php');
  * @covers \tool_cohortsync\cohortsync
  */
 final class cohortsync_test extends \advanced_testcase {
-
     /** @var \progress_trace trace */
     protected $trace = null;
 
@@ -108,7 +107,6 @@ final class cohortsync_test extends \advanced_testcase {
         $this->assertEquals($contextcat1->id, $cohort1->contextid);
         $this->assertEquals($contextcat2->id, $cohort2->contextid);
         $this->assertEquals($contextcat2->id, $cohort3->contextid);
-
     }
 
     /**
@@ -422,7 +420,6 @@ final class cohortsync_test extends \advanced_testcase {
         $this->assertEquals(1, count($cohortsync->get_errors()));
         $errormsg = $cohortsync->get_errors()[0];
         $this->assertStringContainsString('is not readable or does not exist', $errormsg->out());
-
     }
 
     /**
@@ -431,7 +428,7 @@ final class cohortsync_test extends \advanced_testcase {
     public function test_cohortsync_with_notfoundfile(): void {
         global $CFG;
 
-        $csvfilename = $CFG->dirroot.'/admin/tool/cohortsync/tests/fixtures/cohorts_notfound.csv';
+        $csvfilename = $CFG->dirroot . '/admin/tool/cohortsync/tests/fixtures/cohorts_notfound.csv';
 
         $cohortsync = new cohortsync($this->trace, $csvfilename);
 
@@ -482,8 +479,10 @@ final class cohortsync_test extends \advanced_testcase {
 
         $this->assertEquals(1, count($cohortsync->get_warnings()));
         foreach ($cohortsync->get_warnings() as $warningmsg) {
-            $this->assertStringContainsString("not found or you don't have permission to create a cohort there",
-            $warningmsg->out());
+            $this->assertStringContainsString(
+                "not found or you don't have permission to create a cohort there",
+                $warningmsg->out()
+            );
         }
 
         // Test no errors found when creating cohorts.
