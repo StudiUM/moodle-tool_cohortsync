@@ -13,5 +13,5 @@ jobs:
     with:
       moodle-branches: '["MOODLE_501_STABLE"]'
       php-versions: '["8.4", "8.3"]'
-      databases: '["mariadb", "pgsql"]'
-
+      # "pgsql" was removed because incompatible with some sql syntax used in the plugin.
+      databases: '["mariadb"]'
